@@ -45,12 +45,9 @@ p.lead {
   filter: drop-shadow(0 0 2px var(--color-overlay-white-80));
 }
 
-.huge-arrow {
-  width: 80px;
-  height: 80px;
-  stroke-width: 2.5px;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  color: var(--color-text-inverse);
-  filter: drop-shadow(0 4px 8px rgba(13, 59, 60, 0.2));
+.hero-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  z-index: 2;
 }

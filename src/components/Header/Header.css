@@ -1,5 +1,8 @@
 .navbar {
   grid-column: 1 / -1;
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 100;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

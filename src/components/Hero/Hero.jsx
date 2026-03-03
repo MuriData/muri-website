@@ -1,8 +1,7 @@
 import './Hero.css'
 import Panel from '../Panel/Panel'
+import Button from '../Button/Button'
 import BrandMark from '../BrandMark/BrandMark'
-import ArrowIcon from '../ArrowIcon/ArrowIcon'
-import Divider from '../Divider/Divider'
 
 function Hero() {
   return (
@@ -19,13 +18,13 @@ function Hero() {
       </div>
 
       <div className="hero-content">
-        <Divider variant="subtle" />
         <h1>Immutable guarantee for off-chain data.</h1>
         <p className="lead">
           MuriData provides an everlasting, platform-agnostic bridge for NFTs and external datasets. 100% On-chain reference.
         </p>
-        <div style={{ marginTop: 48 }}>
-          <ArrowIcon className="huge-arrow" />
+        <div className="hero-actions">
+          <Button variant="secondary" as="a" href="#">Explore</Button>
+          <Button variant="outline" as="a" href="#">Learn More</Button>
         </div>
       </div>
     </Panel>

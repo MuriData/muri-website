@@ -6,6 +6,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+  margin-bottom: 15px;
 }
 
 .panel--hover {
@@ -51,7 +52,7 @@
   gap: var(--space-sm);
   font-weight: var(--weight-bold);
   font-size: var(--text-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
   letter-spacing: var(--tracking-wide);
   color: var(--color-text-primary);
 }
