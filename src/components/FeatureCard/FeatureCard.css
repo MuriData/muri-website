@@ -1,0 +1,67 @@
+.feature-card {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+  border: var(--border-card);
+}
+
+.feature-card:hover {
+  transform: translateY(var(--lift-md));
+  box-shadow: var(--shadow-hover);
+}
+
+/* ── Dark variant ── */
+
+.feature-card--dark {
+  background-color: var(--color-bg-deep);
+  color: var(--color-text-inverse);
+  border: none;
+}
+
+.feature-card--dark .divider {
+  background-color: var(--color-bg-teal);
+  opacity: 0.5;
+}
+
+.feature-card--dark .badge--label {
+  color: var(--color-bg-teal);
+  background: var(--color-glow-teal-15);
+  padding: 4px 12px;
+  border-radius: var(--radius-badge);
+}
+
+.feature-card--dark .feature-card__desc {
+  color: var(--color-overlay-white-70);
+}
+
+.feature-card--dark .panel-header {
+  color: var(--color-text-inverse);
+}
+
+/* ── Image-bg variant ── */
+
+.feature-card--image-bg {
+  background-image: radial-gradient(circle at 50% 50%, var(--color-bg-surface) 0%, var(--color-bg-canvas) 100%);
+  border: var(--border-card-mint);
+}
+
+/* ── Sub-elements ── */
+
+.feature-card__desc {
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+}
+
+.feature-card__heading {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-snug);
+  margin-top: auto;
+}

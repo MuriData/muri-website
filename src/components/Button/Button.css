@@ -1,0 +1,44 @@
+/* ── Shared ── */
+
+.btn {
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+}
+
+/* ── Primary (CTA) ── */
+
+.btn--primary {
+  padding: 12px 32px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-bg-teal);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-cta);
+  transition: var(--transition-fast);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-bg-teal-hover);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-cta-hover);
+  color: var(--color-text-inverse);
+}
+
+/* ── Ghost ── */
+
+.btn--ghost {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: var(--weight-semibold);
+  transition: var(--transition-fast);
+}
+
+.btn--ghost:hover {
+  background-color: var(--color-overlay-white-50);
+  color: var(--color-bg-teal);
+}

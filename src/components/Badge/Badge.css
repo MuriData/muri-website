@@ -1,0 +1,21 @@
+/* ── Label (uppercase category markers) ── */
+
+.badge--label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-weight: var(--weight-bold);
+  color: var(--color-bg-teal);
+}
+
+/* ── Value (inline data pills) ── */
+
+.badge--value {
+  color: var(--color-bg-teal);
+  font-family: var(--font-main);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-md);
+  background: var(--color-bg-canvas);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+}

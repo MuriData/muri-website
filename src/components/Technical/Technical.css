@@ -1,0 +1,31 @@
+.tech-list-panel {
+  border: var(--border-card);
+}
+
+.tech-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--space-md) 0;
+  border-bottom: var(--border-dashed);
+}
+
+.tech-row:first-of-type {
+  padding-top: 0;
+}
+
+.tech-row:last-child {
+  border-bottom: none;
+}
+
+.tech-key {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+}
+
+@media (min-width: 1024px) {
+  .tech-list-panel {
+    grid-column: span 8;
+  }
+}

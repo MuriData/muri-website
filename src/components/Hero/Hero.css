@@ -1,0 +1,56 @@
+.hero-panel {
+  grid-column: 1 / -1;
+}
+
+.hero-content {
+  max-width: 800px;
+  z-index: 2;
+}
+
+.hero-content h1 {
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+  text-shadow: 2px 2px 0px var(--color-overlay-white-50);
+}
+
+p.lead {
+  font-size: var(--text-2xl);
+  color: var(--color-text-primary);
+  opacity: 0.8;
+  max-width: 600px;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--weight-medium);
+}
+
+.map-texture {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.topo-svg {
+  stroke: var(--color-text-inverse);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-opacity: 0.5;
+  filter: drop-shadow(0 0 2px var(--color-overlay-white-80));
+}
+
+.huge-arrow {
+  width: 80px;
+  height: 80px;
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--color-text-inverse);
+  filter: drop-shadow(0 4px 8px rgba(13, 59, 60, 0.2));
+}

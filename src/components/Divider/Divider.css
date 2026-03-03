@@ -1,0 +1,24 @@
+.divider {
+  height: 2px;
+  background-color: var(--color-bg-teal);
+  width: 100%;
+  margin: var(--space-md) 0;
+  opacity: 0.15;
+  border-radius: 2px;
+}
+
+.divider--tight {
+  margin: var(--space-sm) 0;
+}
+
+/* ── Variants ── */
+
+.divider--subtle {
+  background-color: var(--color-text-primary);
+  opacity: 0.1;
+}
+
+.divider--dark {
+  background-color: var(--color-text-primary);
+  opacity: 0.15;
+}

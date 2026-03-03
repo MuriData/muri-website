@@ -1,0 +1,17 @@
+.brand-mark {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-bg-teal);
+}
+
+.brand-line {
+  width: 18px;
+  height: 4px;
+  background-color: currentColor;
+  border-radius: 4px;
+}
+
+.brand-line:last-child {
+  width: 12px;
+}
