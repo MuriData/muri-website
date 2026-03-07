@@ -11,6 +11,7 @@
   margin-bottom: var(--space-xs);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-navbar);
+  overflow: visible;
 }
 
 .nav-top {

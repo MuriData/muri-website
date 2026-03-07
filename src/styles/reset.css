@@ -115,15 +115,6 @@ body::after {
   min-height: 100vh;
 }
 
-/* RainbowKit injects a [data-rk] wrapper div that must fill the
-   flex parent so page width stays consistent across all routes. */
-[data-rk] {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 a {
   text-decoration: none;
   color: inherit;

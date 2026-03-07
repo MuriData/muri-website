@@ -1,8 +1,8 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit'
-import { http } from 'wagmi'
+import { createConfig, createStorage, http } from 'wagmi'
+import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { QueryClient } from '@tanstack/react-query'
 
-const muriTestnet = {
+export const muriTestnet = {
   id: 44946,
   name: 'MuriData Testnet',
   nativeCurrency: { name: 'MuriCoin', symbol: 'MURI', decimals: 18 },
@@ -20,10 +20,33 @@ const muriTestnet = {
   testnet: true,
 }
 
-export const wagmiConfig = getDefaultConfig({
-  appName: 'MuriData',
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '',
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || ''
+
+const connectors = [
+  injected(),
+  injected({
+    target() {
+      return {
+        id: 'core',
+        name: 'Core',
+        provider: typeof window !== 'undefined' ? window.avalanche : undefined,
+      }
+    },
+  }),
+  walletConnect({ projectId, showQrModal: true }),
+  coinbaseWallet({ appName: 'MuriData' }),
+]
+
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+}
+
+export const wagmiConfig = createConfig({
   chains: [muriTestnet],
+  connectors,
+  storage: createStorage({ storage: noopStorage }),
   transports: {
     [muriTestnet.id]: http(undefined, { batch: true }),
   },
