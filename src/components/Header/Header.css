@@ -106,7 +106,7 @@
 
 /* ── Mobile ── */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navbar {
     flex-direction: column;
     align-items: stretch;
@@ -135,7 +135,7 @@
   }
 
   .navbar--open .nav-links {
-    max-height: 300px;
+    max-height: 500px;
     opacity: 1;
     margin-top: var(--space-sm);
   }

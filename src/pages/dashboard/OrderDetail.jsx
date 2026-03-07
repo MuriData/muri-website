@@ -15,7 +15,7 @@ function Row({ label, value, mono }) {
 function OrderDetail() {
   const { orderId } = useParams()
   const id = BigInt(orderId)
-  const { details, financials, isLoading } = useOrderDetail(id)
+  const { details, financials, escrowInfo, nodeEarnings, isLoading } = useOrderDetail(id)
 
   return (
     <div className="dashboard">
@@ -67,16 +67,45 @@ function OrderDetail() {
                   </span>
                 }
               />
-              {financials[4] && financials[4].length > 0 && (
-                <div className="panel-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-                  <span className="panel-row__label">Assigned Nodes</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {financials[4].map((addr) => (
-                      <span key={addr} className="explorer-badge explorer-badge--contract">{truncateAddress(addr)}</span>
-                    ))}
-                  </div>
-                </div>
+            </div>
+          )}
+
+          {escrowInfo && (
+            <div className="dashboard-panel">
+              <h2 className="dashboard-panel__title">Escrow Breakdown</h2>
+              <Row label="Total Escrow" value={`${formatMuri(escrowInfo[0])} MURI`} />
+              <Row label="Paid to Nodes" value={`${formatMuri(escrowInfo[1])} MURI`} />
+              <Row label="Remaining" value={`${formatMuri(escrowInfo[2])} MURI`} />
+              {escrowInfo[0] > 0n && (
+                <Row
+                  label="Utilization"
+                  value={`${((Number(escrowInfo[1]) / Number(escrowInfo[0])) * 100).toFixed(1)}%`}
+                />
               )}
+            </div>
+          )}
+
+          {nodeEarnings && nodeEarnings.length > 0 && (
+            <div className="dashboard-panel">
+              <h2 className="dashboard-panel__title">Node Earnings</h2>
+              <div className="orders-table-wrap">
+                <table className="orders-table">
+                  <thead>
+                    <tr>
+                      <th>Node</th>
+                      <th>Earned</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {nodeEarnings.map(({ address, earned }) => (
+                      <tr key={address}>
+                        <td>{truncateAddress(address)}</td>
+                        <td>{earned != null ? `${formatMuri(earned)} MURI` : '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 

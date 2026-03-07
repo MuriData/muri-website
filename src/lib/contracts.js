@@ -187,6 +187,64 @@ export const FILE_MARKET_ABI = [
     outputs: [{ name: 'claimable', type: 'uint256' }],
     stateMutability: 'view',
   },
+  {
+    type: 'function',
+    name: 'getOrderEscrowInfo',
+    inputs: [{ name: '_orderId', type: 'uint256' }],
+    outputs: [
+      { name: 'totalEscrow', type: 'uint256' },
+      { name: 'paidToNodes', type: 'uint256' },
+      { name: 'remainingEscrow', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getReporterEarningsInfo',
+    inputs: [{ name: '_reporter', type: 'address' }],
+    outputs: [
+      { name: 'earned', type: 'uint256' },
+      { name: 'withdrawn', type: 'uint256' },
+      { name: 'pending', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getNodeOrderEarnings',
+    inputs: [
+      { name: '_node', type: 'address' },
+      { name: '_orderId', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getActiveOrdersPage',
+    inputs: [
+      { name: 'offset', type: 'uint256' },
+      { name: 'limit', type: 'uint256' },
+    ],
+    outputs: [
+      { name: 'orderIds', type: 'uint256[]' },
+      { name: 'total', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getChallengeableOrdersPage',
+    inputs: [
+      { name: 'offset', type: 'uint256' },
+      { name: 'limit', type: 'uint256' },
+    ],
+    outputs: [
+      { name: 'orderIds', type: 'uint256[]' },
+      { name: 'total', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
 ]
 
 export const NODE_STAKING_ABI = [

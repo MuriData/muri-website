@@ -40,6 +40,7 @@ export function useNodePanel() {
       { ...marketContract, functionName: 'getNodeOrders', args: [address] },
       { ...marketContract, functionName: 'getClaimableRewards', args: [address] },
       { ...stakingContract, functionName: 'getMaxSlashable', args: [address] },
+      { ...marketContract, functionName: 'getReporterEarningsInfo', args: [address] },
     ],
     query: {
       enabled: !!address && isNode,
@@ -60,5 +61,6 @@ export function useNodePanel() {
     nodeOrders: get(3),        // uint256[]
     claimableRewards: get(4),  // uint256
     maxSlashable: get(5),      // uint256
+    reporterInfo: get(6),      // [earned, withdrawn, pending]
   }
 }

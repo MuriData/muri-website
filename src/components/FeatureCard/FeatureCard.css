@@ -65,3 +65,12 @@
   letter-spacing: var(--tracking-snug);
   margin-top: auto;
 }
+
+@media (max-width: 1024px) {
+  .feature-card {
+    padding: var(--space-lg);
+    min-height: auto;
+    justify-content: flex-start;
+    gap: var(--space-xs);
+  }
+}

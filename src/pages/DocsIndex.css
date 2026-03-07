@@ -23,10 +23,12 @@
 .docs-index__card-link {
   text-decoration: none;
   color: inherit;
+  display: flex;
 }
 
 .docs-index__card {
   min-height: 200px;
+  flex: 1;
 }
 
 .docs-index__card-desc {

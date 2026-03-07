@@ -22,6 +22,7 @@ function NodePanel() {
     nodeOrders,
     claimableRewards,
     maxSlashable,
+    reporterInfo,
   } = useNodePanel()
 
   if (!isConnected) {
@@ -88,6 +89,25 @@ function NodePanel() {
           <span className="node-panel__value">{maxSlashable != null ? `${formatMuri(maxSlashable)} MURI` : '—'}</span>
         </div>
       </div>
+      {reporterInfo && (reporterInfo[0] > 0n || reporterInfo[2] > 0n) && (
+        <div className="node-panel__reporter">
+          <span className="node-panel__label">Reporter Earnings</span>
+          <div className="node-panel__grid" style={{ marginTop: '6px' }}>
+            <div className="node-panel__row">
+              <span className="node-panel__label">Total Earned</span>
+              <span className="node-panel__value">{formatMuri(reporterInfo[0])} MURI</span>
+            </div>
+            <div className="node-panel__row">
+              <span className="node-panel__label">Withdrawn</span>
+              <span className="node-panel__value">{formatMuri(reporterInfo[1])} MURI</span>
+            </div>
+            <div className="node-panel__row">
+              <span className="node-panel__label">Pending</span>
+              <span className="node-panel__value node-panel__value--highlight">{formatMuri(reporterInfo[2])} MURI</span>
+            </div>
+          </div>
+        </div>
+      )}
       {nodeOrders && nodeOrders.length > 0 && (
         <div className="node-panel__orders">
           <span className="node-panel__label">Assigned Orders</span>

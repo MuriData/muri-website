@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from 'react'
 
-function PageTransition({ locationKey, children }) {
+function PageTransition({ locationKey, className, children }) {
   const [displayChildren, setDisplayChildren] = useState(children)
+  const [displayClassName, setDisplayClassName] = useState(className)
   const [transitioning, setTransitioning] = useState(false)
   const prevKey = useRef(locationKey)
 
@@ -10,9 +11,10 @@ function PageTransition({ locationKey, children }) {
       prevKey.current = locationKey
       setTransitioning(true)
 
-      // Short fade-out, then swap content and fade-in
+      // Short fade-out, then swap content + className and fade-in
       const timeout = setTimeout(() => {
         setDisplayChildren(children)
+        setDisplayClassName(className)
         setTransitioning(false)
         window.scrollTo(0, 0)
       }, 120)
@@ -20,12 +22,13 @@ function PageTransition({ locationKey, children }) {
       return () => clearTimeout(timeout)
     } else {
       setDisplayChildren(children)
+      setDisplayClassName(className)
     }
-  }, [locationKey, children])
+  }, [locationKey, children, className])
 
   return (
     <div
-      className="page-transition"
+      className={`page-transition${displayClassName ? ` ${displayClassName}` : ''}`}
       style={{
         opacity: transitioning ? 0 : 1,
         transform: transitioning ? 'translateY(4px)' : 'translateY(0)',

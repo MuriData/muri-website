@@ -16,11 +16,12 @@ import PageTransition from './components/PageTransition'
 
 function App() {
   const location = useLocation()
+  const isLanding = location.pathname === '/'
 
   return (
     <div className="main-wrapper">
       <Header />
-      <PageTransition locationKey={location.pathname}>
+      <PageTransition locationKey={location.pathname} className={isLanding ? '' : 'page-content'}>
         <Routes location={location}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />

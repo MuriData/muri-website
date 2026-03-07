@@ -4,7 +4,7 @@ import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashbo
 import './OrderDetailModal.css'
 
 function OrderDetailModal({ orderId, onClose }) {
-  const { details, financials, isLoading } = useOrderDetail(orderId)
+  const { details, financials, escrowInfo, nodeEarnings, isLoading } = useOrderDetail(orderId)
 
   const handleClose = useCallback(() => {
     onClose()
@@ -60,16 +60,24 @@ function OrderDetailModal({ orderId, onClose }) {
                     </span>
                   }
                 />
-                {financials[4] && financials[4].length > 0 && (
-                  <div className="order-modal__nodes">
-                    <span className="order-modal__label">Assigned Nodes</span>
-                    <div className="order-modal__node-list">
-                      {financials[4].map((addr) => (
-                        <span key={addr} className="order-modal__node-pill">{truncateAddress(addr)}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              </div>
+            )}
+
+            {escrowInfo && (
+              <div className="order-modal__section">
+                <h4 className="order-modal__section-title">Escrow Breakdown</h4>
+                <Row label="Total Escrow" value={`${formatMuri(escrowInfo[0])} MURI`} />
+                <Row label="Paid to Nodes" value={`${formatMuri(escrowInfo[1])} MURI`} />
+                <Row label="Remaining" value={`${formatMuri(escrowInfo[2])} MURI`} />
+              </div>
+            )}
+
+            {nodeEarnings && nodeEarnings.length > 0 && (
+              <div className="order-modal__section">
+                <h4 className="order-modal__section-title">Node Earnings</h4>
+                {nodeEarnings.map(({ address, earned }) => (
+                  <Row key={address} label={truncateAddress(address)} value={earned != null ? `${formatMuri(earned)} MURI` : '—'} />
+                ))}
               </div>
             )}
 

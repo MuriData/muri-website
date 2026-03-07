@@ -326,6 +326,48 @@
   color: var(--color-text-secondary);
 }
 
+/* ── Panel title with controls ── */
+.dashboard-panel__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ── Order Browser tabs ── */
+.order-browser__tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--color-bg-canvas);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.order-browser__tab {
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.order-browser__tab:hover {
+  color: var(--color-text-primary);
+}
+
+.order-browser__tab--active {
+  background: var(--color-bg-teal);
+  color: var(--color-text-on-teal);
+}
+
 /* ── Loading / Error states ── */
 .dashboard-loading,
 .dashboard-error {
@@ -394,6 +436,7 @@
   .dashboard-orders-section { grid-column: 1 / -1; }
   .dashboard-slash-section { grid-column: 1 / -1; }
   .dashboard-nodelist-section { grid-column: 1 / -1; }
+  .dashboard-orderbrowser-section { grid-column: 1 / -1; }
 
   .dashboard-stats {
     grid-template-columns: repeat(6, 1fr);

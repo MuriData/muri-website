@@ -11,3 +11,8 @@
   flex: 1;
   min-height: calc(100dvh - 80px);
 }
+
+.page-content {
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}

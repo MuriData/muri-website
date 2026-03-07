@@ -6,6 +6,7 @@ import {
   formatChunks,
   truncateAddress,
 } from '../hooks/useDashboardData'
+import { useOrderBrowser } from '../hooks/useOrderBrowser'
 import NodePanel from './dashboard/NodePanel'
 import NodeListTable from './dashboard/NodeListTable'
 
@@ -98,6 +99,114 @@ function SlotCard({ index, orderId, node, deadlineBlock, expired, currentBlock }
             <span>{expired ? 'Expired' : 'Blocks left'}</span>
             <span>{expired ? 'Awaiting sweep' : blocksLeft ?? '—'}</span>
           </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Order Browser (paginated) ──
+function OrderBrowser({ navigate }) {
+  const {
+    orders,
+    mode,
+    setMode,
+    page,
+    totalPages,
+    totalOrders,
+    isLoading,
+    hasPrev,
+    hasNext,
+    prevPage,
+    nextPage,
+  } = useOrderBrowser()
+
+  return (
+    <div className="dashboard-panel">
+      <div className="dashboard-panel__title-row">
+        <h2 className="dashboard-panel__title" style={{ marginBottom: 0 }}>
+          <span className="dashboard-panel__title-icon"><IconGrid /></span>
+          Order Browser
+          <span className="node-list__count">{totalOrders}</span>
+        </h2>
+        <div className="order-browser__tabs">
+          <button
+            className={`order-browser__tab${mode === 'active' ? ' order-browser__tab--active' : ''}`}
+            onClick={() => setMode('active')}
+          >
+            Active
+          </button>
+          <button
+            className={`order-browser__tab${mode === 'challengeable' ? ' order-browser__tab--active' : ''}`}
+            onClick={() => setMode('challengeable')}
+          >
+            Challengeable
+          </button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <p className="dashboard-empty">Loading orders...</p>
+      ) : orders.length === 0 ? (
+        <p className="dashboard-empty">No {mode} orders</p>
+      ) : (
+        <>
+          <div className="orders-table-wrap">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Owner</th>
+                  <th>Size</th>
+                  <th>Periods</th>
+                  <th>Replicas</th>
+                  <th>Escrow</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map(({ id, details: d, financials: f }) => (
+                  <tr
+                    key={id.toString()}
+                    className="orders-table__row--clickable"
+                    onClick={() => navigate(`/dashboard/order/${id.toString()}`)}
+                  >
+                    <td>
+                      <Link to={`/dashboard/order/${id.toString()}`} className="explorer-link">
+                        #{id.toString()}
+                      </Link>
+                    </td>
+                    <td>{d ? truncateAddress(d[0]) : '—'}</td>
+                    <td>{d ? formatChunks(d[3]) : '—'}</td>
+                    <td>{d ? d[4]?.toString() : '—'}</td>
+                    <td>{d ? `${d[6]?.toString()}/${d[5]?.toString()}` : '—'}</td>
+                    <td>{f ? `${formatMuri(f[0])} MURI` : '—'}</td>
+                    <td>
+                      {f ? (
+                        <span className={`order-status order-status--${f[3] ? 'expired' : 'active'}`}>
+                          {f[3] ? 'Expired' : 'Active'}
+                        </span>
+                      ) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPages > 1 && (
+            <div className="node-list__pagination">
+              <button className="node-list__page-btn" onClick={prevPage} disabled={!hasPrev}>
+                Prev
+              </button>
+              <span className="node-list__page-info">
+                Page {page + 1} of {totalPages}
+              </span>
+              <button className="node-list__page-btn" onClick={nextPage} disabled={!hasNext}>
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -306,6 +415,11 @@ function Dashboard() {
             <p className="dashboard-empty">No orders placed yet</p>
           )}
         </div>
+      </div>
+
+      {/* Order Browser (paginated active/challengeable) */}
+      <div className="dashboard-orders-section">
+        <OrderBrowser navigate={navigate} />
       </div>
 
       {/* Slash Stats */}
