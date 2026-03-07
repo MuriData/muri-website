@@ -1,12 +1,9 @@
+import muriIcon from '../../assets/muri-brandmark.webp'
 import './BrandMark.css'
 
-function BrandMark({ color }) {
-  const style = color ? { backgroundColor: color } : undefined
+function BrandMark() {
   return (
-    <div className="brand-mark">
-      <div className="brand-line" style={style} />
-      <div className="brand-line" style={style} />
-    </div>
+    <img className="brand-mark" src={muriIcon} alt="MuriData" />
   )
 }
 

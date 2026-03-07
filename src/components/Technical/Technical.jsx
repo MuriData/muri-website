@@ -1,7 +1,6 @@
 import './Technical.css'
 import Panel from '../Panel/Panel'
 import Badge from '../Badge/Badge'
-import BrandMark from '../BrandMark/BrandMark'
 
 const specs = [
   { key: 'Storage Proof', value: 'Merkle / ZK-SNARK' },
@@ -15,7 +14,6 @@ function Technical() {
   return (
     <Panel variant="surface" className="tech-list-panel">
       <div className="panel-header">
-        <BrandMark />
         Specifications
       </div>
 
