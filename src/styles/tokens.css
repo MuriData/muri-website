@@ -88,6 +88,17 @@
   /* ── Transforms ── */
   --lift-sm: -4px;
   --lift-md: -8px;
+
+  /* ── Prose / Content ── */
+  --prose-max-width: 780px;
+  --sidebar-width: 280px;
+  --sidebar-width-compact: 260px;
+  --toc-width: 220px;
+  --color-code-bg: #f0fafa;
+  --color-code-text: #0d3b3c;
+  --color-border-subtle: rgba(41, 215, 220, 0.15);
+  --color-link: #1aa8ac;
+  --color-link-hover: #0d3b3c;
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,68 @@
+/* ── Code syntax highlighting — matches MuriData teal/deep palette ── */
+
+.hljs {
+  background: var(--color-bg-deep);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name {
+  color: var(--color-bg-teal);
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-template-variable {
+  color: var(--color-bg-mint);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--color-overlay-white-30);
+  font-style: italic;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-regexp {
+  color: #f0b27a;
+}
+
+.hljs-title,
+.hljs-section {
+  color: var(--color-bg-teal);
+  font-weight: var(--weight-bold);
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #a3e4d7;
+}
+
+.hljs-attribute,
+.hljs-symbol {
+  color: var(--color-bg-mint);
+}
+
+.hljs-meta {
+  color: var(--color-overlay-white-50);
+}
+
+.hljs-addition {
+  color: #82e0aa;
+  background: rgba(130, 224, 170, 0.1);
+}
+
+.hljs-deletion {
+  color: #f1948a;
+  background: rgba(241, 148, 138, 0.1);
+}

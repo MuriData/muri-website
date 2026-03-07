@@ -1,0 +1,51 @@
+/* ── Docs layout — 3-column with sidebar + content + TOC ── */
+
+.docs-layout {
+  display: flex;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 60vh;
+}
+
+.docs-layout__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Mobile sidebar toggle ── */
+
+.docs-layout__sidebar-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 8px var(--space-sm);
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: sticky;
+  top: 130px;
+  z-index: 50;
+  align-self: flex-start;
+}
+
+.docs-layout__sidebar-toggle:hover {
+  background: var(--color-glow-teal-15);
+  color: var(--color-bg-teal);
+}
+
+@media (max-width: 1024px) {
+  .docs-layout__sidebar-toggle {
+    display: flex;
+    margin-bottom: var(--space-sm);
+  }
+
+  .docs-layout {
+    flex-direction: column;
+  }
+}

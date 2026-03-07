@@ -1,0 +1,21 @@
+.blog-index__title {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.blog-index__desc {
+  font-size: var(--text-md);
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+.blog-index__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}

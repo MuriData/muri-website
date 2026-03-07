@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './Footer.css'
 import BrandMark from '../BrandMark/BrandMark'
 import Divider from '../Divider/Divider'
@@ -15,7 +16,7 @@ const navGroups = [
   {
     title: 'Developers',
     links: [
-      { label: 'Documentation', href: '#' },
+      { label: 'Documentation', to: '/docs' },
       { label: 'GitHub', href: '#' },
       { label: 'SDK Reference', href: '#' },
       { label: 'Bug Bounty', href: '#' },
@@ -36,7 +37,7 @@ const navGroups = [
       { label: 'Block Explorer', href: '#' },
       { label: 'Network Status', href: '#' },
       { label: 'Brand Kit', href: '#' },
-      { label: 'Blog', href: '#' },
+      { label: 'Blog', to: '/blog' },
     ],
   },
 ]
@@ -46,10 +47,10 @@ function Footer() {
     <footer className="footer">
       <div className="footer__top">
         <div className="footer__brand">
-          <div className="footer__logo">
+          <Link to="/" className="footer__logo">
             <BrandMark color="var(--color-bg-teal)" />
             <span>MuriData</span>
-          </div>
+          </Link>
           <p className="footer__tagline">
             Decentralized storage with cryptographic proof of integrity. Permanent, verifiable, on-chain.
           </p>
@@ -88,7 +89,11 @@ function Footer() {
               <ul className="footer__nav-list">
                 {group.links.map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className="footer__nav-link">{link.label}</a>
+                    {link.to ? (
+                      <Link to={link.to} className="footer__nav-link">{link.label}</Link>
+                    ) : (
+                      <a href={link.href} className="footer__nav-link">{link.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -1,0 +1,62 @@
+/* ── Doc prev/next navigation — uses Panel-like styling ── */
+
+.doc-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: var(--border-dashed);
+}
+
+.doc-nav__link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: var(--transition-bounce);
+  flex: 1;
+  max-width: 280px;
+}
+
+.doc-nav__link:hover {
+  transform: translateY(var(--lift-sm));
+  box-shadow: var(--shadow-hover);
+}
+
+.doc-nav__link--next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.doc-nav__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-bg-teal);
+}
+
+.doc-nav__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .doc-nav {
+    flex-direction: column;
+  }
+
+  .doc-nav__link {
+    max-width: none;
+  }
+
+  .doc-nav__link--next {
+    text-align: left;
+  }
+}

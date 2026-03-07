@@ -1,0 +1,36 @@
+.wallet-btn-wrapper {
+  display: inline-flex;
+}
+
+.wallet-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-teal);
+  color: var(--color-text-on-teal);
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-cta);
+}
+
+.wallet-pill:hover {
+  background: var(--color-bg-teal-hover);
+  box-shadow: var(--shadow-cta-hover);
+  transform: translateY(var(--lift-sm));
+}
+
+.wallet-pill__chain-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.wallet-pill__address {
+  letter-spacing: var(--tracking-wide);
+}
