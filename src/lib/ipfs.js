@@ -36,6 +36,16 @@ export class KuboClient {
     return { peerId: data.ID, agentVersion: data.AgentVersion }
   }
 
+  async cat(cid) {
+    const res = await fetch(`${this.apiUrl}/api/v0/cat?arg=${encodeURIComponent(cid)}`, {
+      method: 'POST',
+      headers: this._headers(),
+    })
+    if (!res.ok) throw new Error(`IPFS cat failed: ${res.status}`)
+    const buf = await res.arrayBuffer()
+    return new Uint8Array(buf)
+  }
+
   async add(file) {
     const form = new FormData()
     form.append('file', file)

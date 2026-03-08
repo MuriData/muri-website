@@ -13,7 +13,7 @@ export function useMyOrders() {
   const { address, isConnected } = useAccount()
 
   // Fetch recent orders (up to 50) to find ones owned by this wallet
-  const { data: recentData, isLoading: ordersLoading } = useReadContract({
+  const { data: recentData, isLoading: ordersLoading, refetch: refetchOrders } = useReadContract({
     ...market,
     functionName: 'getRecentOrders',
     args: [50n],
@@ -71,5 +71,6 @@ export function useMyOrders() {
     orders,
     isLoading: ordersLoading || (myOrderIds.length > 0 && detailsLoading),
     refundBalance: refundBalance ?? 0n,
+    refetch: refetchOrders,
   }
 }

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useFileUpload } from '../../hooks/useFileUpload'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { useWasm } from '../../hooks/useWasm'
@@ -30,12 +31,23 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
-const STEPS = ['Select File', 'Upload to IPFS', 'Generate Proof', 'Configure', 'Submit']
+function IconLink() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 23l-3 3a5 5 0 01-7-7l3-3" />
+      <path d="M23 17l3-3a5 5 0 017 7l-3 3" />
+      <path d="M16 24l8-8" />
+    </svg>
+  )
+}
 
-function Stepper({ current }) {
+const STEPS_UPLOAD = ['Select File', 'Upload to IPFS', 'Generate Proof', 'Configure', 'Submit']
+const STEPS_IMPORT = ['Enter CID', 'Fetch from IPFS', 'Generate Proof', 'Configure', 'Submit']
+
+function Stepper({ current, steps }) {
   return (
     <div className="wizard-stepper">
-      {STEPS.map((label, i) => {
+      {steps.map((label, i) => {
         const isDone = i < current
         const isActive = i === current
         return (
@@ -44,7 +56,7 @@ function Stepper({ current }) {
               <span className="wizard-step__dot">{isDone ? '✓' : i + 1}</span>
               <span>{label}</span>
             </div>
-            {i < STEPS.length - 1 && (
+            {i < steps.length - 1 && (
               <div className={`wizard-step__line${isDone ? ' wizard-step__line--done' : ''}`} />
             )}
           </div>
@@ -57,7 +69,9 @@ function Stepper({ current }) {
 function UploadWizard({ ipfs }) {
   const fileInputRef = useRef(null)
   const [dragOver, setDragOver] = useState(false)
-  const { state: uploadState, file, cid, numChunks, error: uploadError, selectFile, uploadToIpfs, reset: resetUpload } = useFileUpload(ipfs.upload)
+  const [inputMode, setInputMode] = useState('upload') // 'upload' | 'import'
+  const [uriInput, setUriInput] = useState('')
+  const { state: uploadState, file, cid, numChunks, error: uploadError, selectFile, uploadToIpfs, importFromCid, reset: resetUpload } = useFileUpload(ipfs.upload)
 
   // Consume navigation state (file from drag or openPicker flag from click)
   const location = useLocation()
@@ -87,6 +101,14 @@ function UploadWizard({ ipfs }) {
 
   // Transaction
   const { placeOrder, isPending, isConfirming, isSuccess, error: txError, reset: resetTx } = useStorageActions()
+
+  // Refresh order list immediately after successful submission
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (isSuccess) {
+      queryClient.invalidateQueries()
+    }
+  }, [isSuccess, queryClient])
 
   // Determine current step
   let step = 0
@@ -133,12 +155,26 @@ function UploadWizard({ ipfs }) {
     })
   }
 
+  const parseCid = (uri) => {
+    let s = uri.trim()
+    if (s.startsWith('ipfs://')) s = s.slice(7)
+    s = s.split('/')[0] // strip subpath
+    return s
+  }
+
+  const handleImport = () => {
+    const cidStr = parseCid(uriInput)
+    if (!cidStr) return
+    importFromCid(cidStr, ipfs.fetchFile)
+  }
+
   const handleReset = () => {
     resetUpload()
     resetTx()
     wasm.reset()
     setPeriodsInput('4')
     setReplicasInput('3')
+    setUriInput('')
   }
 
   return (
@@ -149,31 +185,80 @@ function UploadWizard({ ipfs }) {
       </h2>
 
       <div className="upload-wizard">
-        <Stepper current={step} />
+        <Stepper current={step} steps={inputMode === 'import' ? STEPS_IMPORT : STEPS_UPLOAD} />
 
-        {/* Step 0: File selection */}
+        {/* Step 0: Mode toggle + File selection or CID input */}
         {uploadState === 'idle' && (
-          <div
-            className={`drop-zone${dragOver ? ' drop-zone--dragover' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <div className="drop-zone__icon"><IconUploadCloud /></div>
-            <p className="drop-zone__text">
-              Drag and drop a file, or <strong>browse</strong>
-            </p>
-            <p className="drop-zone__text" style={{ fontSize: '0.75rem' }}>
-              Files are chunked into 16 KB pieces and stored across IPFS nodes
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              onChange={handleFileSelect}
-              style={{ display: 'none' }}
-            />
-          </div>
+          <>
+            <div className="ipfs-bar__mode-toggle" style={{ justifySelf: 'center' }}>
+              <button
+                className={`ipfs-bar__mode-btn${inputMode === 'upload' ? ' ipfs-bar__mode-btn--active' : ''}`}
+                onClick={() => setInputMode('upload')}
+              >
+                Upload File
+              </button>
+              <button
+                className={`ipfs-bar__mode-btn${inputMode === 'import' ? ' ipfs-bar__mode-btn--active' : ''}`}
+                onClick={() => setInputMode('import')}
+              >
+                Import from IPFS
+              </button>
+            </div>
+
+            {inputMode === 'upload' && (
+              <div
+                className={`drop-zone${dragOver ? ' drop-zone--dragover' : ''}`}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="drop-zone__icon"><IconUploadCloud /></div>
+                <p className="drop-zone__text">
+                  Drag and drop a file, or <strong>browse</strong>
+                </p>
+                <p className="drop-zone__text" style={{ fontSize: '0.75rem' }}>
+                  Files are chunked into 16 KB pieces and stored across IPFS nodes
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                />
+              </div>
+            )}
+
+            {inputMode === 'import' && (
+              <div className="drop-zone">
+                <div className="drop-zone__icon"><IconLink /></div>
+                <p className="drop-zone__text">
+                  Enter an IPFS CID or URI to fetch and place a storage order
+                </p>
+                <div style={{ display: 'flex', gap: '8px', width: '100%', maxWidth: '480px' }}>
+                  <input
+                    className="form-input form-input--mono"
+                    type="text"
+                    value={uriInput}
+                    onChange={(e) => setUriInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleImport()}
+                    placeholder="ipfs://Qm... or bare CID"
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    className="console-btn console-btn--primary"
+                    onClick={handleImport}
+                    disabled={!parseCid(uriInput) || !ipfs.isConnected}
+                  >
+                    Fetch
+                  </button>
+                </div>
+                {!ipfs.isConnected && (
+                  <p className="form-hint">Connect to IPFS first using the bar above</p>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         {/* File selected — show info */}
@@ -206,7 +291,7 @@ function UploadWizard({ ipfs }) {
         {uploadState === 'uploading' && (
           <button className="console-btn console-btn--primary" disabled>
             <span className="console-btn__spinner" />
-            Uploading to IPFS...
+            {inputMode === 'import' ? 'Fetching from IPFS...' : 'Uploading to IPFS...'}
           </button>
         )}
 
@@ -354,8 +439,8 @@ function UploadWizard({ ipfs }) {
               Order placed successfully!
             </div>
 
-            {/* Seeding indicator for browser IPFS */}
-            {ipfs.mode === 'browser' && (
+            {/* Seeding indicator for browser IPFS (upload mode only) */}
+            {ipfs.mode === 'browser' && inputMode === 'upload' && (
               <div className="seeding-status">
                 <div className="seeding-status__header">
                   <span className="seeding-status__dot" />

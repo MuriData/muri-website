@@ -56,6 +56,27 @@ export async function addFile(file) {
 }
 
 /**
+ * Fetch file bytes from the network by CID string.
+ */
+export async function catFile(cidStr) {
+  const { fs } = await getHelia()
+  const { CID } = await import('multiformats/cid')
+  const cid = CID.parse(cidStr)
+  const chunks = []
+  for await (const chunk of fs.cat(cid)) {
+    chunks.push(chunk)
+  }
+  const total = chunks.reduce((n, c) => n + c.length, 0)
+  const result = new Uint8Array(total)
+  let offset = 0
+  for (const chunk of chunks) {
+    result.set(chunk, offset)
+    offset += chunk.length
+  }
+  return result
+}
+
+/**
  * Get info about the running Helia node.
  */
 export async function getNodeInfo() {

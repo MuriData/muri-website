@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { getHelia, stopHelia, addFile as heliaAddFile, getNodeInfo as heliaInfo } from '../lib/helia'
+import { getHelia, stopHelia, addFile as heliaAddFile, catFile as heliaCatFile, getNodeInfo as heliaInfo } from '../lib/helia'
 import { KuboClient } from '../lib/ipfs'
 
 const STORAGE_KEY = 'muri_ipfs_config'
@@ -76,6 +76,16 @@ export function useIpfs() {
     }
   }, [status, config.mode])
 
+  const fetchFile = useCallback(async (cid) => {
+    if (status !== 'connected') throw new Error('IPFS not connected')
+
+    if (config.mode === 'browser') {
+      return heliaCatFile(cid)
+    } else {
+      return kuboRef.current.cat(cid)
+    }
+  }, [status, config.mode])
+
   // Refresh peer count periodically for browser mode
   useEffect(() => {
     if (status !== 'connected' || config.mode !== 'browser') return
@@ -101,5 +111,6 @@ export function useIpfs() {
     connect,
     disconnect,
     upload,
+    fetchFile,
   }
 }

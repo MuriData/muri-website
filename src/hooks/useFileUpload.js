@@ -35,6 +35,24 @@ export function useFileUpload(ipfsUpload) {
     }
   }, [file, ipfsUpload])
 
+  const importFromCid = useCallback(async (cidStr, ipfsFetch) => {
+    setState('uploading')
+    setError(null)
+    setCid(null)
+    setFile(null)
+    try {
+      const bytes = await ipfsFetch(cidStr)
+      const blob = new File([bytes], cidStr, { type: 'application/octet-stream' })
+      setFile(blob)
+      setNumChunks(Math.ceil(bytes.length / CHUNK_SIZE))
+      setCid(cidStr)
+      setState('uploaded')
+    } catch (err) {
+      setError(err.message || 'Failed to fetch from IPFS')
+      setState('idle')
+    }
+  }, [])
+
   const reset = useCallback(() => {
     setState('idle')
     setFile(null)
@@ -51,6 +69,7 @@ export function useFileUpload(ipfsUpload) {
     error,
     selectFile,
     uploadToIpfs,
+    importFromCid,
     reset,
   }
 }
