@@ -1,75 +1,121 @@
 ---
 title: Quickstart
-description: Get started with MuriData in minutes
+description: Get started developing and running MuriData node and website
 order: 2
 ---
 
-# Quickstart
+# Quickstart Guide
 
-This guide walks you through setting up a MuriData storage node on the Avalanche testnet.
+This guide covers the two primary ways to interact with the MuriData network: uploading files as a customer, and earning yield as a storage node operator.
 
-## Prerequisites
+---
 
-- Go 1.24.4+
-- An Avalanche Fuji testnet wallet with test AVAX
-- IPFS daemon (Kubo) running locally
+## 1. Uploading Files via the Console
 
-## 1. Install the Node
+The easiest way to store data on MuriData is through the web Console.
 
+### Prerequisites
+- A Web3 Wallet (e.g., MetaMask, Core) connected to the **MuriData L1 Network**.
+- MURI tokens to pay for storage.
+
+### Steps
+1. Navigate to the **MuriData Console** in your browser.
+2. Click **Connect Wallet** in the top right corner.
+3. Once connected, navigate to the **Upload** section.
+4. Drag and drop your file into the upload zone, or click to browse.
+5. The Console will automatically calculate the storage cost based on the file size and the current network storage rate.
+6. Click **Confirm Upload**. Your wallet will prompt you to approve the transaction locking your MURI tokens in the `FileMarket` smart contract.
+7. Upon transaction success, your file is immediately pinned to IPFS by your local browser node and broadcasted to the network. MuriData Storage Nodes will automatically detect the order, download the file, and begin generating Zero-Knowledge proofs to secure it.
+
+You can monitor the status of your file and the nodes securing it via the **Explorer** tab.
+
+---
+
+## 2. Becoming a Node Operator
+
+Anyone with spare hard drive space can earn yield by running the `murid` storage daemon. The easiest way to run the node is via Docker Compose, which automatically provisions the required IPFS node alongside the MuriData daemon.
+
+### Prerequisites
+- **Git** and **Docker Compose** installed on your machine.
+- A stable internet connection and sufficient hard drive space.
+- MURI tokens (for staking collateral).
+
+### Steps
+
+1. **Clone the Repository**
+   Clone the `muri-node` repository to your local machine:
+   ```bash
+   git clone https://github.com/MuriData/muri-node.git
+   cd muri-node/docker
+   ```
+
+2. **Initialize the Node**
+   Run the interactive initialization wizard. This step securely generates your node's EVM wallet and ZK-proof keys:
+   ```bash
+   docker compose run --rm murid init
+   ```
+   *Note: Safely back up the mnemonic phrase generated during this step.*
+
+3. **Fund Your Node**
+   Send MURI tokens to the EVM address generated in the previous step. You need tokens to pay for gas fees and to stake as collateral.
+
+4. **Stake Collateral**
+   Specify how much storage capacity (in GB) you want to offer to the network. The daemon will calculate and stake the required collateral automatically:
+   ```bash
+   docker compose run --rm murid stake -capacity-gb 100
+   ```
+
+5. **Start Earning**
+   Start the daemon in the background. It will automatically listen for new storage orders from the smart contract, fetch data via IPFS, and submit Zero-Knowledge proofs to the network to earn your yield:
+   ```bash
+   docker compose up -d
+   ```
+
+You can view your node's live logs and proof generation status at any time:
 ```bash
-git clone https://github.com/muridata/muri-node.git
-cd muri-node
-go build -o murid ./cmd/murid/
+docker compose logs -f murid
 ```
 
-## 2. Configure
+---
 
-Copy the example configuration and edit it:
+## 3. Exiting the Network (Quitting)
 
-```bash
-cp murid.example.toml murid.toml
-```
+If you decide to stop participating as a Node Operator, you must gracefully exit the network to retrieve your staked collateral. 
 
-Key settings to configure:
+> [!WARNING]
+> MuriData distributes storage payouts on a **7-day billing period**. Additionally, there is a strict distinction between gracefully expiring orders, voluntarily quitting early (cancellation penalty), and going offline (slashing).
 
-```toml
-[chain]
-rpc_url = "https://api.avax-test.network/ext/bc/C/rpc"
-chain_id = 43113
-market_address = "0x..."
+### Steps
 
-[ipfs]
-api_url = "http://127.0.0.1:5001"
+1. **Initiate Unstake**
+   Tell the smart contract that you want to stop accepting new storage orders:
+   ```bash
+   docker compose run --rm murid unstake
+   ```
+   *Note: This prevents new orders from being assigned to you, but you are still responsible for your existing active storage commitments until they naturally expire.*
 
-[node]
-private_key_path = "./keys/evm.key"
-secret_key_path = "./keys/zk.key"
-data_dir = "./data"
-keys_dir = "./keys"
-```
+2. **Wait for Expiration vs. Quitting Early**
+   You have two choices for your active orders:
+   - **Graceful Expiration:** Keep your `murid` daemon running until all your current orders naturally expire. You will receive your full yield.
+   - **Quit Early (Cancellation Penalty):** If you cannot wait, you can forcefully quit your active orders. **Doing so incurs a cancellation penalty** (a portion of your staked collateral is slashed because you failed to serve the order for its full duration).
+   
+   > [!CAUTION]
+   > Do not simply turn off your daemon. **If your node goes offline** while you have active orders, you will fail PoI challenges and suffer **severe slashing penalties**, resulting in a significant loss of funds.
 
-## 3. Stake and Register
+3. **Withdraw Collateral & Earnings**
+   Once your node has zero active orders (either gracefully expired or forcefully quit), you can safely withdraw your MURI tokens back to your node's EVM wallet:
+   ```bash
+   docker compose run --rm murid withdraw
+   ```
 
-Before your node can accept storage orders, you need to stake AVAX and register your ZK public key:
+4. **Transfer Funds Out**
+   Transfer the MURI tokens and any native gas tokens from your node's CLI wallet back to your personal Web3 wallet:
+   ```bash
+   docker compose run --rm murid wallet send -to 0xYourPersonalWalletAddress -amount ALL
+   ```
 
-```bash
-# The node handles staking automatically on first run
-./murid -config murid.toml
-```
-
-## 4. Monitor
-
-Your node will automatically:
-- Poll for and execute new storage orders
-- Respond to PoI challenges within the challenge window
-- Claim accumulated rewards periodically
-
-Check the logs for activity:
-
-```
-INFO  challenge_loop: received challenge for order 42, slot 3
-INFO  prover: generating PoI proof (8 openings)...
-INFO  prover: proof generated in 38.2s
-INFO  chain: submitting proof for slot 3...
-INFO  chain: proof accepted, tx: 0xabc...
-```
+5. **Stop the Daemon**
+   Finally, safely shut down the IPFS node and `murid` daemon containers:
+   ```bash
+   docker compose down
+   ```

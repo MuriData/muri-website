@@ -86,6 +86,16 @@ export function useIpfs() {
     }
   }, [status, config.mode])
 
+  // Auto-connect on mount when using external mode with a saved/default endpoint
+  const autoConnected = useRef(false)
+  useEffect(() => {
+    if (autoConnected.current) return
+    if (status !== 'disconnected') return
+    if (config.mode !== 'external' || !config.endpoint) return
+    autoConnected.current = true
+    connect()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Refresh peer count periodically for browser mode
   useEffect(() => {
     if (status !== 'connected' || config.mode !== 'browser') return
