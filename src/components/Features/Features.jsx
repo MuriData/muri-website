@@ -4,7 +4,7 @@ import FeatureCard from '../FeatureCard/FeatureCard'
 const features = [
   {
     label: '01 — Philosophy',
-    description: 'No much heavy work; No dependence on special hardware. MuriData allows even laptop to become storage provider.',
+    description: 'No much heavy work; No dependence on special hardware. MuriData allows even laptop to store and earn.',
     heading: 'Efficient',
     variant: 'light',
   },
@@ -16,15 +16,15 @@ const features = [
   },
   {
     label: '03 — Trust',
-    description: 'Cryptographic proof of data existance, with contract-bounded time range. In theory file will be there - for you; forever.',
-    heading: 'Everlasting',
+    description: 'Zero-knowledge proofs continuously verify that providers hold your data. Every claim is proven on-chain; no trust required, just math.',
+    heading: 'Verifiable',
     variant: 'image-bg',
   },
 ]
 
 function Features() {
   return (
-    <div className="feature-grid">
+    <div id="features" className="feature-grid">
       {features.map((feature) => (
         <FeatureCard key={feature.label} {...feature} />
       ))}

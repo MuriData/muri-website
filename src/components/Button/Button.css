@@ -1,12 +1,16 @@
 /* ── Shared ── */
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-main);
   font-size: var(--text-base);
   font-weight: var(--weight-bold);
   text-decoration: none;
   cursor: pointer;
   border: none;
+  line-height: 1.5;
 }
 
 /* ── Primary (CTA) ── */

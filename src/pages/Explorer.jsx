@@ -12,6 +12,8 @@ import {
 } from '../hooks/useExplorerData'
 import { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS } from '../lib/contracts'
 
+const BLOCKSCOUT = 'https://testnet-explorer.muri.moe'
+
 // ── Known addresses & selectors ──
 const KNOWN_ADDRESSES = {
   [FILE_MARKET_ADDRESS.toLowerCase()]: 'FileMarket',
@@ -108,7 +110,12 @@ function Explorer() {
       <div className="explorer-header">
         <div>
           <h1 className="explorer-title">Block Explorer</h1>
-          <p className="explorer-subtitle">MuriData Testnet — chain 44946</p>
+          <p className="explorer-subtitle">
+            MuriData Testnet — chain 44946
+            <a href={BLOCKSCOUT} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
+              View on Blockscout ↗
+            </a>
+          </p>
         </div>
         <div className="explorer-header__stats">
           <div className="explorer-header__stat">
@@ -203,7 +210,9 @@ function Explorer() {
                           </div>
                         </td>
                         <td>{b.size != null ? `${Number(b.size).toLocaleString()} B` : '—'}</td>
-                        <td className="explorer-mono">{truncHash(b.hash)}</td>
+                        <td className="explorer-mono">
+                          <a href={`${BLOCKSCOUT}/block/${b.number}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(b.hash)}</a>
+                        </td>
                       </tr>
                     )
                   })}
@@ -273,7 +282,9 @@ function Explorer() {
                         const isKnownMethod = !method.startsWith('0x')
                         return (
                           <tr key={tx.hash}>
-                            <td className="explorer-mono">{truncHash(tx.hash)}</td>
+                            <td className="explorer-mono">
+                              <a href={`${BLOCKSCOUT}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
+                            </td>
                             <td>
                               <span className={`explorer-method${isKnownMethod ? ' explorer-method--known' : ''}`}>
                                 {method}
@@ -285,14 +296,18 @@ function Explorer() {
                               </Link>
                             </td>
                             <td>{timeAgo(tx.timestamp)}</td>
-                            <td className="explorer-mono">{truncAddr(tx.from)}</td>
+                            <td className="explorer-mono">
+                              <a href={`${BLOCKSCOUT}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
+                            </td>
                             <td>
                               {isCreate ? (
                                 <span className="explorer-badge explorer-badge--create">Deploy</span>
                               ) : toLabel ? (
-                                <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
+                                <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
+                                  <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
+                                </a>
                               ) : (
-                                <span className="explorer-mono">{truncAddr(tx.to)}</span>
+                                <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
                               )}
                             </td>
                           </tr>

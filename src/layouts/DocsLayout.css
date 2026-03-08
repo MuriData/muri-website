@@ -1,4 +1,4 @@
-/* ── Docs layout — 3-column with sidebar + content + TOC ── */
+/* ── Docs layout — sidebar column + content ── */
 
 .docs-layout {
   display: flex;
@@ -7,9 +7,77 @@
   min-height: 60vh;
 }
 
+.docs-layout__sidebar-col {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  position: sticky;
+  top: 130px;
+  max-height: calc(100vh - 150px);
+}
+
 .docs-layout__content {
   flex: 1;
   min-width: 0;
+}
+
+/* ── Nav bars — pinned at bottom ── */
+
+.docs-layout__nav-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.docs-layout__nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+}
+
+.docs-layout__nav-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+  flex: 1;
+  text-align: center;
+}
+
+.docs-layout__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.docs-layout__nav-btn:hover {
+  color: var(--color-bg-teal);
+  border-color: var(--color-bg-teal);
+  background: var(--color-glow-teal-15);
+}
+
+.docs-layout__nav-btn--disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ── Mobile sidebar toggle ── */
@@ -28,10 +96,6 @@
   color: var(--color-text-primary);
   cursor: pointer;
   transition: var(--transition-fast);
-  position: sticky;
-  top: 130px;
-  z-index: 50;
-  align-self: flex-start;
 }
 
 .docs-layout__sidebar-toggle:hover {
@@ -47,5 +111,19 @@
 
   .docs-layout {
     flex-direction: column;
+  }
+
+  .docs-layout__sidebar-col {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+
+  .docs-layout__nav-bars {
+    flex-direction: row;
+  }
+
+  .docs-layout__nav-bar {
+    flex: 1;
   }
 }

@@ -1,0 +1,109 @@
+/* ── Wrapper ── */
+
+.faq-wrapper {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .faq-wrapper {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Heading ── */
+
+.faq-heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.faq-heading__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-bg-teal);
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+
+.faq-heading__line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-bg-mint);
+  margin-left: var(--space-sm);
+}
+
+/* ── List ── */
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* ── Item ── */
+
+.faq-item {
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.faq-item--open {
+  border-color: var(--color-bg-teal);
+  box-shadow: var(--shadow-soft);
+}
+
+/* ── Question button ── */
+
+.faq-item__q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.faq-item__q:hover {
+  color: var(--color-bg-teal-hover);
+}
+
+.faq-item__chevron {
+  font-size: var(--text-xl);
+  color: var(--color-bg-teal);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Answer ── */
+
+.faq-item__a {
+  padding: 0 var(--space-md) 20px;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}

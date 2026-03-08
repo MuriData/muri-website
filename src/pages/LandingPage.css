@@ -9,5 +9,10 @@
   .landing-grid {
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: minmax(min-content, max-content);
+    align-items: stretch;
+  }
+
+  .landing-grid > * {
+    align-self: stretch;
   }
 }

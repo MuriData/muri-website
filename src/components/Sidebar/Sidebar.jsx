@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import manifest from 'virtual:content-manifest'
 import './Sidebar.css'
@@ -32,6 +32,10 @@ function Sidebar({ isOpen, onClose }) {
 function SidebarCategory({ category, currentSlug }) {
   const hasActive = category.items.some((item) => item.slug === currentSlug)
   const [expanded, setExpanded] = useState(hasActive)
+
+  useEffect(() => {
+    if (hasActive) setExpanded(true)
+  }, [hasActive])
 
   return (
     <div className="sidebar__category">

@@ -1,5 +1,5 @@
 import './LandingPage.css'
-import { Hero, Features, Technical, StatPanel } from '../components'
+import { Hero, Features, Technical, StatPanel, UseCases, SecuritySection, NodeCTA, ComparisonTable, ProofExplainer, Roadmap, FAQ, Team, AvalancheSection } from '../components'
 
 function LandingPage() {
   return (
@@ -8,6 +8,15 @@ function LandingPage() {
       <Features />
       <Technical />
       <StatPanel />
+      <UseCases />
+      <SecuritySection />
+      <NodeCTA />
+      <ComparisonTable />
+      <ProofExplainer />
+      <AvalancheSection />
+      <Roadmap />
+      <FAQ />
+      <Team />
     </div>
   )
 }

@@ -13,6 +13,35 @@
   text-align: left;
 }
 
+.hero-testnet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 4px 14px;
+  border-radius: var(--radius-full, 999px);
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-sm);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hero-testnet-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+  animation: testnet-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes testnet-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #4ade80; }
+  50% { opacity: 0.4; box-shadow: 0 0 2px #4ade80; }
+}
+
 .hero-content h1 {
   font-size: var(--text-display);
   font-weight: var(--weight-bold);

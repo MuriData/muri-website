@@ -34,8 +34,8 @@ const navGroups = [
   {
     title: 'Resources',
     links: [
-      { label: 'Block Explorer', href: '#' },
-      { label: 'Network Status', href: '#' },
+      { label: 'Block Explorer', to: '/explorer' },
+      { label: 'Blockscout', href: 'https://testnet-explorer.muri.moe', external: true },
       { label: 'Brand Kit', href: '#' },
       { label: 'Blog', to: '/blog' },
     ],
@@ -52,7 +52,7 @@ function Footer() {
             <span>MuriData</span>
           </Link>
           <p className="footer__tagline">
-            Decentralized storage with cryptographic proof of integrity. Permanent, verifiable, on-chain.
+            A dream-like storage partner for blockchain-based computing platforms.
           </p>
           <div className="footer__socials">
             {/* Twitter / X */}
@@ -91,6 +91,8 @@ function Footer() {
                   <li key={link.label}>
                     {link.to ? (
                       <Link to={link.to} className="footer__nav-link">{link.label}</Link>
+                    ) : link.external ? (
+                      <a href={link.href} className="footer__nav-link" target="_blank" rel="noopener noreferrer">{link.label} ↗</a>
                     ) : (
                       <a href={link.href} className="footer__nav-link">{link.label}</a>
                     )}
@@ -107,9 +109,9 @@ function Footer() {
       <div className="footer__bottom">
         <span className="footer__copy">&copy; {new Date().getFullYear()} MuriData Protocol. All rights reserved.</span>
         <div className="footer__legal">
-          <a href="#" className="footer__legal-link">Terms of Service</a>
-          <a href="#" className="footer__legal-link">Privacy Policy</a>
-          <a href="#" className="footer__legal-link">Cookie Policy</a>
+          <Link to="/docs/legal/terms-of-service" className="footer__legal-link">Terms of Service</Link>
+          <Link to="/docs/legal/privacy-policy" className="footer__legal-link">Privacy Policy</Link>
+          <Link to="/docs/legal/cookie-policy" className="footer__legal-link">Cookie Policy</Link>
         </div>
       </div>
     </footer>

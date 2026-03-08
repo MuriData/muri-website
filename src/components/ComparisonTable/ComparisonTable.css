@@ -1,0 +1,175 @@
+/* ── Wrapper ── */
+
+.comparison-wrapper {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .comparison-wrapper {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Heading ── */
+
+.comparison-heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.comparison-heading__icon {
+  color: var(--color-bg-teal);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.comparison-heading__line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-bg-mint);
+  margin-left: var(--space-sm);
+}
+
+/* ── Desktop table ── */
+
+.comparison-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-sm);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.comparison-th {
+  text-align: left;
+  padding: var(--space-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  background: var(--color-bg-canvas);
+  white-space: nowrap;
+}
+
+.comparison-th--feature {
+  color: var(--color-text-primary);
+}
+
+.comparison-th--muri {
+  color: var(--color-bg-teal);
+}
+
+.comparison-td {
+  padding: var(--space-sm);
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-bg-canvas);
+  line-height: 1.4;
+}
+
+.comparison-td--feature {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.comparison-td--muri {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+  background: var(--color-glow-teal-15);
+}
+
+.comparison-row:hover .comparison-td {
+  background: var(--color-bg-canvas);
+}
+
+.comparison-row:hover .comparison-td--muri {
+  background: var(--color-glow-teal-15);
+}
+
+/* ── Mobile cards (hidden on desktop) ── */
+
+.comparison-cards {
+  display: none;
+}
+
+.comparison-card {
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comparison-card__title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 4px 0;
+}
+
+.comparison-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.comparison-card__row--muri {
+  background: var(--color-glow-teal-15);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 0 -8px;
+}
+
+.comparison-card__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.comparison-card__value {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.comparison-card__row--muri .comparison-card__label {
+  color: var(--color-bg-teal);
+}
+
+.comparison-card__row--muri .comparison-card__value {
+  font-weight: var(--weight-semibold);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .comparison-table-wrap {
+    display: none;
+  }
+
+  .comparison-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}

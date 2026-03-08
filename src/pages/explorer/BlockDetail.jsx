@@ -7,6 +7,8 @@ import {
 } from '../../hooks/useExplorerData'
 import { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS } from '../../lib/contracts'
 
+const BLOCKSCOUT = 'https://testnet-explorer.muri.moe'
+
 const KNOWN_ADDRESSES = {
   [FILE_MARKET_ADDRESS.toLowerCase()]: 'FileMarket',
   [NODE_STAKING_ADDRESS.toLowerCase()]: 'NodeStaking',
@@ -58,7 +60,12 @@ function BlockDetail() {
             Back to explorer
           </Link>
           <h1 className="explorer-title">Block #{num.toLocaleString()}</h1>
-          <p className="explorer-subtitle">{isLoading ? 'Loading...' : `${transactions.length} transaction${transactions.length !== 1 ? 's' : ''}`}</p>
+          <p className="explorer-subtitle">
+            {isLoading ? 'Loading...' : `${transactions.length} transaction${transactions.length !== 1 ? 's' : ''}`}
+            <a href={`${BLOCKSCOUT}/block/${num}`} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
+              View on Blockscout ↗
+            </a>
+          </p>
         </div>
       </div>
       <div className="explorer-content">
@@ -86,20 +93,26 @@ function BlockDetail() {
                     const isKnownMethod = !method.startsWith('0x')
                     return (
                       <tr key={tx.hash}>
-                        <td className="explorer-mono">{truncHash(tx.hash)}</td>
+                        <td className="explorer-mono">
+                          <a href={`${BLOCKSCOUT}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
+                        </td>
                         <td>
                           <span className={`explorer-method${isKnownMethod ? ' explorer-method--known' : ''}`}>
                             {method}
                           </span>
                         </td>
-                        <td className="explorer-mono">{truncAddr(tx.from)}</td>
+                        <td className="explorer-mono">
+                          <a href={`${BLOCKSCOUT}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
+                        </td>
                         <td>
                           {isCreate ? (
                             <span className="explorer-badge explorer-badge--create">Contract Created</span>
                           ) : toLabel ? (
-                            <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
+                            <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
+                              <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
+                            </a>
                           ) : (
-                            <span className="explorer-mono">{truncAddr(tx.to)}</span>
+                            <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
                           )}
                         </td>
                       </tr>
