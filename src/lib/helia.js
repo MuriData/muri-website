@@ -49,12 +49,8 @@ export async function addFile(file) {
   const bytes = new Uint8Array(await file.arrayBuffer())
   const cid = await fs.addBytes(bytes)
 
-  // Advertise to DHT so storage nodes can find this peer
-  try {
-    await helia.routing.provide(cid)
-  } catch {
-    // Best-effort — DHT provide can fail in restrictive network environments
-  }
+  // Advertise to DHT in the background (don't block upload)
+  helia.routing.provide(cid).catch(() => {})
 
   return cid.toString()
 }
