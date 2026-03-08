@@ -9,7 +9,7 @@ function loadConfig() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) return JSON.parse(raw)
   } catch { /* ignore */ }
-  return { mode: 'browser', endpoint: 'http://localhost:5001', auth: { type: 'none' } }
+  return { mode: 'external', endpoint: 'https://ipfs-rpc.muri.moe/', auth: { type: 'bearer', token: 'v17BbEqG2qlLJfz3DEvQTiTGA3ubUzVoJUD9fShNmQ4' } }
 }
 
 function saveConfig(cfg) {
