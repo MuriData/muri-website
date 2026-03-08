@@ -108,7 +108,7 @@ function UploadWizard({ ipfs }) {
   const handleSubmit = () => {
     placeOrder({
       root: wasm.root,
-      uri: cid,
+      uri: `ipfs://${cid}`,
       numChunks: actualNumChunks,
       periods,
       replicas,
