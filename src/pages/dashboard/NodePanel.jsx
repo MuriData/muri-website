@@ -1,5 +1,5 @@
 import { useNodePanel } from '../../hooks/useNodePanel'
-import { formatMuri, formatChunks } from '../../hooks/useDashboardData'
+import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
 import { useClaimRewards, useClaimReporterRewards, useUnstakeNode } from '../../hooks/useNodeActions'
 import CapacityForm from './CapacityForm'
 import NodeOrdersTable from './NodeOrdersTable'
@@ -83,17 +83,24 @@ function NodePanel() {
         </div>
       )}
 
-      <div className="node-panel__grid">
+      {/* Identity rows — full width */}
+      <div className="node-panel__identity">
         <div className="node-panel__row">
           <span className="node-panel__label">Address</span>
-          <span className="node-panel__value node-panel__value--mono">{address}</span>
+          <span className="node-panel__value node-panel__value--mono" title={address}>
+            {truncateAddress(address)}
+          </span>
         </div>
         <div className="node-panel__row">
           <span className="node-panel__label">Public Key</span>
-          <span className="node-panel__value node-panel__value--mono">
-            {nodeInfo && nodeInfo[3] ? '0x' + nodeInfo[3].toString(16) : '—'}
+          <span className="node-panel__value node-panel__value--mono" title={nodeInfo && nodeInfo[3] ? '0x' + nodeInfo[3].toString(16) : ''}>
+            {nodeInfo && nodeInfo[3] ? truncateAddress('0x' + nodeInfo[3].toString(16)) : '—'}
           </span>
         </div>
+      </div>
+
+      {/* Stats grid — two columns */}
+      <div className="node-panel__grid">
         <div className="node-panel__row">
           <span className="node-panel__label">Stake</span>
           <span className="node-panel__value">{nodeInfo ? `${formatMuri(nodeInfo[0])} MURI` : '—'}</span>

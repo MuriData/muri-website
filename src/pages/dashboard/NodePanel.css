@@ -27,10 +27,26 @@
   padding: var(--space-xs) 0;
 }
 
+/* ── Identity section (full-width rows) ── */
+.node-panel__identity {
+  margin-bottom: 4px;
+}
+
+.node-panel__identity .node-panel__row {
+  border-bottom: 1px dashed var(--color-border-subtle);
+}
+
+.node-panel__identity .node-panel__row:last-child {
+  border-bottom: none;
+}
+
+/* ── Stats grid (two columns) ── */
 .node-panel__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0;
+  column-gap: var(--space-sm);
+  padding-top: 4px;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .node-panel__row {
@@ -43,7 +59,7 @@
   font-size: var(--text-sm);
 }
 
-.node-panel__row:nth-last-child(-n+2) {
+.node-panel__grid > .node-panel__row:nth-last-child(-n+2) {
   border-bottom: none;
 }
 
@@ -157,7 +173,7 @@
   }
 
   .node-panel__value--mono {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 
   .node-panel__actions {
