@@ -1,6 +1,11 @@
 import { useNodePanel } from '../../hooks/useNodePanel'
 import { formatMuri, formatChunks } from '../../hooks/useDashboardData'
+import { useClaimRewards, useClaimReporterRewards, useUnstakeNode } from '../../hooks/useNodeActions'
+import CapacityForm from './CapacityForm'
+import NodeOrdersTable from './NodeOrdersTable'
+import NodeStakeForm from './NodeStakeForm'
 import './NodePanel.css'
+import '../../pages/Console.css'
 
 function IconUser() {
   return (
@@ -25,6 +30,10 @@ function NodePanel() {
     reporterInfo,
   } = useNodePanel()
 
+  const claimRewards = useClaimRewards()
+  const claimReporter = useClaimReporterRewards()
+  const unstakeNode = useUnstakeNode()
+
   if (!isConnected) {
     return (
       <div className="node-panel node-panel--hint">
@@ -41,11 +50,18 @@ function NodePanel() {
     )
   }
 
-  if (!isNode) return null
+  // Not a node → show registration form
+  if (!isNode) {
+    return <NodeStakeForm />
+  }
 
   const utilPct = nodeInfo && nodeInfo[1] > 0n
     ? ((Number(nodeInfo[2]) / Number(nodeInfo[1])) * 100).toFixed(1)
     : '0'
+
+  const hasClaimable = claimableRewards != null && claimableRewards > 0n
+  const hasReporterPending = reporterInfo && reporterInfo[2] > 0n
+  const canUnstake = nodeInfo && nodeInfo[2] === 0n // used == 0
 
   return (
     <div className="node-panel">
@@ -53,10 +69,30 @@ function NodePanel() {
         <span className="dashboard-panel__title-icon"><IconUser /></span>
         Your Node
       </h2>
+
+      {/* Utilization gauge */}
+      {nodeInfo && (
+        <div className="node-panel__gauge">
+          <div className="node-panel__gauge-bar">
+            <div
+              className="node-panel__gauge-fill"
+              style={{ width: `${Math.min(Number(utilPct), 100)}%` }}
+            />
+          </div>
+          <span className="node-panel__gauge-label">{utilPct}% utilized</span>
+        </div>
+      )}
+
       <div className="node-panel__grid">
         <div className="node-panel__row">
           <span className="node-panel__label">Address</span>
           <span className="node-panel__value node-panel__value--mono">{address}</span>
+        </div>
+        <div className="node-panel__row">
+          <span className="node-panel__label">Public Key</span>
+          <span className="node-panel__value node-panel__value--mono">
+            {nodeInfo && nodeInfo[3] ? '0x' + nodeInfo[3].toString(16) : '—'}
+          </span>
         </div>
         <div className="node-panel__row">
           <span className="node-panel__label">Stake</span>
@@ -89,6 +125,55 @@ function NodePanel() {
           <span className="node-panel__value">{maxSlashable != null ? `${formatMuri(maxSlashable)} MURI` : '—'}</span>
         </div>
       </div>
+
+      {/* Action buttons */}
+      <div className="node-panel__actions">
+        {/* Claim Rewards */}
+        {hasClaimable && (
+          <button
+            className="console-btn console-btn--primary console-btn--small"
+            onClick={claimRewards.claim}
+            disabled={claimRewards.isPending || claimRewards.isConfirming}
+          >
+            {claimRewards.isPending || claimRewards.isConfirming
+              ? 'Claiming...'
+              : `Claim ${formatMuri(claimableRewards)} MURI`}
+          </button>
+        )}
+
+        {claimRewards.isSuccess && (
+          <div className="tx-status tx-status--success" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>Rewards claimed</div>
+        )}
+        {claimRewards.error && (
+          <div className="tx-status tx-status--error" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>
+            {claimRewards.error.shortMessage || 'Claim failed'}
+          </div>
+        )}
+
+        {/* Capacity management */}
+        <CapacityForm nodeInfo={nodeInfo} />
+
+        {/* Unstake */}
+        {canUnstake && (
+          <button
+            className="console-btn console-btn--danger console-btn--small"
+            onClick={unstakeNode.unstake}
+            disabled={unstakeNode.isPending || unstakeNode.isConfirming}
+          >
+            {unstakeNode.isPending || unstakeNode.isConfirming ? 'Unstaking...' : 'Unstake Node'}
+          </button>
+        )}
+        {unstakeNode.isSuccess && (
+          <div className="tx-status tx-status--success" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>Unstaked</div>
+        )}
+        {unstakeNode.error && (
+          <div className="tx-status tx-status--error" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>
+            {unstakeNode.error.shortMessage || 'Unstake failed'}
+          </div>
+        )}
+      </div>
+
+      {/* Reporter earnings */}
       {reporterInfo && (reporterInfo[0] > 0n || reporterInfo[2] > 0n) && (
         <div className="node-panel__reporter">
           <span className="node-panel__label">Reporter Earnings</span>
@@ -106,18 +191,26 @@ function NodePanel() {
               <span className="node-panel__value node-panel__value--highlight">{formatMuri(reporterInfo[2])} MURI</span>
             </div>
           </div>
+          {hasReporterPending && (
+            <button
+              className="console-btn console-btn--secondary console-btn--small"
+              onClick={claimReporter.claim}
+              disabled={claimReporter.isPending || claimReporter.isConfirming}
+              style={{ marginTop: 8 }}
+            >
+              {claimReporter.isPending || claimReporter.isConfirming
+                ? 'Claiming...'
+                : `Claim ${formatMuri(reporterInfo[2])} MURI`}
+            </button>
+          )}
+          {claimReporter.isSuccess && (
+            <div className="tx-status tx-status--success" style={{ marginTop: 6, fontSize: '0.7rem', padding: '4px 8px' }}>Reporter rewards claimed</div>
+          )}
         </div>
       )}
-      {nodeOrders && nodeOrders.length > 0 && (
-        <div className="node-panel__orders">
-          <span className="node-panel__label">Assigned Orders</span>
-          <div className="node-panel__pills">
-            {nodeOrders.map((id) => (
-              <span key={id.toString()} className="node-panel__pill">#{id.toString()}</span>
-            ))}
-          </div>
-        </div>
-      )}
+
+      {/* Assigned orders table with quit actions */}
+      <NodeOrdersTable nodeOrders={nodeOrders} address={address} />
     </div>
   )
 }
