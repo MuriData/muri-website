@@ -62,9 +62,12 @@ function UploadWizard({ ipfs }) {
   const wasm = useWasm()
 
   // Order config
-  const [periods, setPeriods] = useState(4)
-  const [replicas, setReplicas] = useState(3)
+  const [periodsInput, setPeriodsInput] = useState('4')
+  const [replicasInput, setReplicasInput] = useState('3')
   const [priceWei, setPriceWei] = useState('100000000000000')
+
+  const periods = Number(periodsInput) || 0
+  const replicas = Number(replicasInput) || 0
 
   // Transaction
   const { placeOrder, isPending, isConfirming, isSuccess, error: txError, reset: resetTx } = useStorageActions()
@@ -118,8 +121,8 @@ function UploadWizard({ ipfs }) {
     resetUpload()
     resetTx()
     wasm.reset()
-    setPeriods(4)
-    setReplicas(3)
+    setPeriodsInput('4')
+    setReplicasInput('3')
   }
 
   return (
@@ -255,8 +258,8 @@ function UploadWizard({ ipfs }) {
                   type="number"
                   min={1}
                   max={52}
-                  value={periods}
-                  onChange={(e) => setPeriods(Number(e.target.value))}
+                  value={periodsInput}
+                  onChange={(e) => setPeriodsInput(e.target.value)}
                 />
                 <span className="form-hint">{periods * 7} days ({periods} weeks)</span>
               </div>
@@ -267,8 +270,8 @@ function UploadWizard({ ipfs }) {
                   type="number"
                   min={1}
                   max={10}
-                  value={replicas}
-                  onChange={(e) => setReplicas(Number(e.target.value))}
+                  value={replicasInput}
+                  onChange={(e) => setReplicasInput(e.target.value)}
                 />
                 <span className="form-hint">{replicas} storage nodes</span>
               </div>

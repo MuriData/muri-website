@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useStakeNode } from '../../hooks/useNodeActions'
 import { formatMuri } from '../../hooks/useDashboardData'
 
-const STAKE_PER_CHUNK = 100000000000000n // 10^14 wei
+const STAKE_PER_CHUNK = 400000000000000n // 4 * 10^14 wei
 const CHUNK_BYTES = 16384 // 16 KB
+const SNARK_SCALAR_FIELD = 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001n
 
 const UNITS = [
   { label: 'Chunks', bytes: CHUNK_BYTES },
@@ -11,6 +12,20 @@ const UNITS = [
   { label: 'MB',     bytes: 1024 * 1024 },
   { label: 'GB',     bytes: 1024 * 1024 * 1024 },
 ]
+
+// Validate public key: must be a valid hex BigInt, non-zero, and within BN254 scalar field.
+function validatePublicKey(pk) {
+  if (!pk || pk.trim() === '') return null // not yet entered
+  try {
+    const val = BigInt(pk)
+    if (val === 0n) return 'Public key cannot be zero'
+    if (val < 0n) return 'Public key cannot be negative'
+    if (val >= SNARK_SCALAR_FIELD) return 'Public key exceeds BN254 scalar field'
+    return null // valid
+  } catch {
+    return 'Invalid format — must be a hex value (0x...) from murid keygen'
+  }
+}
 
 function NodeStakeForm() {
   const [capacityInput, setCapacityInput] = useState('')
@@ -25,7 +40,9 @@ function NodeStakeForm() {
     : Math.floor((rawValue * selectedUnit.bytes) / CHUNK_BYTES)
   const stakeValue = BigInt(chunks) * STAKE_PER_CHUNK
 
-  const canSubmit = chunks > 0 && publicKey.length > 0 && !isPending && !isConfirming
+  const pkError = validatePublicKey(publicKey)
+  const capacityError = capacityInput && chunks === 0 ? 'Must be at least 1 chunk (16 KB)' : null
+  const canSubmit = chunks > 0 && publicKey.length > 0 && !pkError && !isPending && !isConfirming
 
   function formatStorage(chunks) {
     const bytes = chunks * CHUNK_BYTES
@@ -87,21 +104,21 @@ function NodeStakeForm() {
               ))}
             </select>
           </div>
-          <span className="form-hint">
-            {chunks > 0 ? `${chunks} chunks = ${formatStorage(chunks)}` : '1 chunk = 16 KB'}
+          <span className={`form-hint${capacityError ? ' form-hint--error' : ''}`}>
+            {capacityError || (chunks > 0 ? `${chunks} chunks = ${formatStorage(chunks)}` : '1 chunk = 16 KB')}
           </span>
         </div>
         <div className="form-group">
           <label className="form-label">Node Public Key</label>
           <input
-            className="form-input form-input--mono"
+            className={`form-input form-input--mono${pkError ? ' form-input--error' : ''}`}
             type="text"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
             placeholder="0x1a2b3c..."
           />
-          <span className="form-hint">
-            Public key of the node. Generate with muri-node CLI (Browser is not safe).
+          <span className={`form-hint${pkError ? ' form-hint--error' : ''}`}>
+            {pkError || 'Generate with murid keygen (do not generate in browser).'}
           </span>
         </div>
         <div className="cost-breakdown">

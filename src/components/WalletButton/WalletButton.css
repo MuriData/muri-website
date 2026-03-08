@@ -122,6 +122,36 @@
   font-variant-numeric: tabular-nums;
 }
 
+.wallet-dropdown__nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.wallet-dropdown__nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border: var(--border-glass);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.wallet-dropdown__nav-btn:hover {
+  background: var(--color-bg-mint);
+  border-color: var(--color-bg-teal);
+  color: var(--color-bg-teal-hover);
+}
+
 .wallet-dropdown__disconnect {
   width: 100%;
   padding: 10px;

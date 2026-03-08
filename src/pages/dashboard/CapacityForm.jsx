@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useIncreaseCapacity, useDecreaseCapacity } from '../../hooks/useNodeActions'
 import { formatMuri, formatChunks } from '../../hooks/useDashboardData'
 
-const STAKE_PER_CHUNK = 100000000000000n // 10^14 wei
+const STAKE_PER_CHUNK = 400000000000000n // 4 * 10^14 wei
 
 function CapacityForm({ nodeInfo }) {
   const [mode, setMode] = useState(null) // null | 'increase' | 'decrease'

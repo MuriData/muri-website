@@ -436,6 +436,19 @@
   font-size: 0.75rem;
 }
 
+.form-input--error {
+  border-color: #e53e3e;
+}
+
+.form-input--error:focus {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+}
+
+.form-hint--error {
+  color: #e53e3e;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -789,14 +802,63 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 640px) {
-  .form-row {
-    grid-template-columns: 1fr;
+
+/* Tablet */
+@media (max-width: 768px) {
+  .console-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
+  .console-title {
+    font-size: var(--text-xl);
+  }
+
+  .wizard-stepper {
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wizard-step span:not(.wizard-step__dot) {
+    display: none;
+  }
+
+  .wizard-step__line {
+    min-width: 12px;
+    margin: 0 6px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .order-card__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .console {
+    gap: var(--space-xs);
+  }
+
+  .console-panel {
+    padding: var(--space-xs);
+  }
+
+  .console-title {
+    font-size: var(--text-lg);
+  }
+
+  /* IPFS bar stacks vertically */
   .ipfs-bar {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    padding: 8px;
   }
 
   .ipfs-bar__controls {
@@ -809,12 +871,156 @@
     width: 100%;
   }
 
+  .ipfs-bar__mode-toggle {
+    width: 100%;
+  }
+
+  .ipfs-bar__mode-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .ipfs-bar__btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Stepper: dots only, no labels */
+  .wizard-stepper {
+    padding: 0;
+    justify-content: center;
+  }
+
+  .wizard-step__dot {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+  }
+
+  /* Drop zone */
+  .drop-zone {
+    min-height: 120px;
+    padding: var(--space-sm);
+  }
+
+  /* File info wraps */
+  .file-info {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .file-info__name {
+    font-size: var(--text-xs);
+  }
+
+  /* CID/Root display */
+  .cid-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.65rem;
+  }
+
+  /* Form row stacks to single column */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cost breakdown */
+  .cost-breakdown {
+    padding: 8px;
+  }
+
+  .cost-row {
+    font-size: var(--text-xs);
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .cost-row:last-child {
+    font-size: var(--text-sm);
+  }
+
+  /* Buttons full width */
+  .console-btn--primary,
+  .console-btn--secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Order cards */
+  .order-card {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .order-card__header {
+    flex-wrap: wrap;
+  }
+
   .order-card__grid {
     grid-template-columns: 1fr 1fr;
   }
 
+  .order-card__actions {
+    flex-wrap: wrap;
+  }
+
+  .order-card__actions .console-btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* My Orders filter pills scroll horizontally */
+  .my-orders__filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .my-orders__filter {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Refund panel */
   .refund-panel {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+  }
+
+  .refund-panel .console-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Seeding status */
+  .seeding-status {
+    padding: 8px;
+  }
+
+  .seeding-status__text {
+    font-size: 0.7rem;
+  }
+
+  /* Transaction status */
+  .tx-status {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+
+  /* Console gate */
+  .console-gate {
+    min-height: 200px;
+    padding: var(--space-sm);
+  }
+
+  .console-gate__text {
+    font-size: var(--text-sm);
   }
 }

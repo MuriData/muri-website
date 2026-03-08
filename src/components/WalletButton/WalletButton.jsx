@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { muriTestnet } from '../../lib/wagmi'
 import Button from '../Button/Button'
@@ -24,6 +25,7 @@ function WalletButton() {
   const pillRef = useRef(null)
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
 
+  const navigate = useNavigate()
   const { address, isConnected, chain } = useAccount()
   const { connectors, connect, isPending } = useConnect()
   const { disconnect } = useDisconnect()
@@ -130,6 +132,31 @@ function WalletButton() {
           <div className="wallet-dropdown__address-wrap">
             <div className="wallet-dropdown__address-label">Wallet Address</div>
             <div className="wallet-dropdown__address">{address}</div>
+          </div>
+          <div className="wallet-dropdown__nav">
+            <button
+              className="wallet-dropdown__nav-btn"
+              onClick={() => { navigate('/dashboard'); setDropdownOpen(false) }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1.5" y="1.5" width="5" height="5" rx="1" />
+                <rect x="9.5" y="1.5" width="5" height="5" rx="1" />
+                <rect x="1.5" y="9.5" width="5" height="5" rx="1" />
+                <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
+              </svg>
+              Dashboard
+            </button>
+            <button
+              className="wallet-dropdown__nav-btn"
+              onClick={() => { navigate('/console'); setDropdownOpen(false) }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1.5" y="2.5" width="13" height="11" rx="2" />
+                <path d="M4.5 6.5l2.5 2-2.5 2" />
+                <path d="M8.5 10.5h3" />
+              </svg>
+              Console
+            </button>
           </div>
           <button
             className="wallet-dropdown__disconnect"
