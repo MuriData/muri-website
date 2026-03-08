@@ -4,6 +4,7 @@ import { Header, Footer } from './components'
 import LandingPage from './pages/LandingPage'
 import Dashboard from './pages/Dashboard'
 import OrderDetail from './pages/dashboard/OrderDetail'
+import Console from './pages/Console'
 import Explorer from './pages/Explorer'
 import BlockDetail from './pages/explorer/BlockDetail'
 import DocsLayout from './layouts/DocsLayout'
@@ -26,6 +27,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/order/:orderId" element={<OrderDetail />} />
+          <Route path="/console" element={<Console />} />
           <Route path="/explorer" element={<Explorer />} />
           <Route path="/explorer/block/:blockNumber" element={<BlockDetail />} />
           <Route path="/docs" element={<DocsLayout />}>

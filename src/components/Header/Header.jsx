@@ -45,6 +45,7 @@ function Header() {
         </div>
         <div className="nav-links">
           <Button variant="ghost" as={Link} to="/dashboard" onClick={closeMenu}>Dashboard</Button>
+          <Button variant="ghost" as={Link} to="/console" onClick={closeMenu}>Console</Button>
           <Button variant="ghost" as={Link} to="/explorer" onClick={closeMenu}>Explorer</Button>
           <Button variant="ghost" as={Link} to="/docs" onClick={closeMenu}>Documentation</Button>
           <Button variant="ghost" as={Link} to="/blog" onClick={closeMenu}>Blog</Button>

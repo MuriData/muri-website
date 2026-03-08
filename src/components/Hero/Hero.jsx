@@ -27,7 +27,6 @@ function Hero() {
       <img src={muriCharacter} alt="MURI character" className="hero-character hero-character--full" />
 
       <div className="hero-content">
-        <span className="hero-testnet-badge"><span className="hero-testnet-dot" />Testnet is Live</span>
         <h1>The Storage Network That Proves Itself.</h1>
         <p className="lead">
           Verifiable Storage or Hot Retrieval? MuriData wants both! A dream-like storage partner for blockchain-based computing platforms.

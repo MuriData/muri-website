@@ -16,9 +16,9 @@ const KNOWN_ADDRESSES = {
 }
 
 const KNOWN_SELECTORS = {
-  '0x789ec3bb': 'placeOrder',
-  '0x94f61134': 'executeOrder',
-  '0xf25eb35a': 'submitProof',
+  '0x678d66a9': 'placeOrder',
+  '0xa1a870d9': 'executeOrder',
+  '0xe68f31e3': 'submitProof',
   '0x514fcac7': 'cancelOrder',
   '0x4ee7de66': 'completeExpiredOrder',
   '0xdd203e8d': 'quitOrder',
