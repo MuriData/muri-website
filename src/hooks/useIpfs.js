@@ -9,7 +9,7 @@ function loadConfig() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) return JSON.parse(raw)
   } catch { /* ignore */ }
-  return { mode: 'browser', endpoint: 'http://localhost:5001' }
+  return { mode: 'browser', endpoint: 'http://localhost:5001', auth: { type: 'none' } }
 }
 
 function saveConfig(cfg) {
@@ -44,7 +44,7 @@ export function useIpfs() {
         const nodeInfo = await heliaInfo()
         setInfo({ peerId: nodeInfo.peerId, peerCount: nodeInfo.peerCount })
       } else {
-        const client = new KuboClient(config.endpoint)
+        const client = new KuboClient(config.endpoint, config.auth)
         const res = await client.ping()
         kuboRef.current = client
         setInfo({ peerId: res.peerId })
@@ -54,7 +54,7 @@ export function useIpfs() {
       setStatus('error')
       setError(err.message || 'Connection failed')
     }
-  }, [config.mode, config.endpoint])
+  }, [config.mode, config.endpoint, config.auth])
 
   const disconnect = useCallback(async () => {
     if (config.mode === 'browser') {
@@ -91,6 +91,7 @@ export function useIpfs() {
   return {
     mode: config.mode,
     endpoint: config.endpoint,
+    auth: config.auth || { type: 'none' },
     status,
     info,
     error,

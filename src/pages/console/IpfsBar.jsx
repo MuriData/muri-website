@@ -1,8 +1,22 @@
 import { useState } from 'react'
 
+const AUTH_TYPES = [
+  { value: 'none', label: 'None' },
+  { value: 'basic', label: 'Basic Auth' },
+  { value: 'bearer', label: 'Bearer Token' },
+  { value: 'header', label: 'Custom Header' },
+]
+
 function IpfsBar({ ipfs }) {
-  const { mode, endpoint, status, info, error, isConnected, isConnecting, setConfig, connect, disconnect } = ipfs
+  const { mode, endpoint, auth, status, info, error, isConnected, isConnecting, setConfig, connect, disconnect } = ipfs
   const [endpointInput, setEndpointInput] = useState(endpoint)
+  const [authState, setAuthState] = useState(auth || { type: 'none' })
+
+  const updateAuth = (updates) => {
+    const next = { ...authState, ...updates }
+    setAuthState(next)
+    setConfig({ auth: next })
+  }
 
   const dotClass = `ipfs-bar__dot ipfs-bar__dot--${status}`
 
@@ -46,14 +60,70 @@ function IpfsBar({ ipfs }) {
         </div>
 
         {mode === 'external' && !isConnected && (
-          <input
-            className="ipfs-bar__endpoint"
-            type="text"
-            value={endpointInput}
-            onChange={(e) => setEndpointInput(e.target.value)}
-            onBlur={() => setConfig({ endpoint: endpointInput })}
-            placeholder="http://localhost:5001"
-          />
+          <>
+            <input
+              className="ipfs-bar__endpoint"
+              type="text"
+              value={endpointInput}
+              onChange={(e) => setEndpointInput(e.target.value)}
+              onBlur={() => setConfig({ endpoint: endpointInput })}
+              placeholder="http://localhost:5001"
+            />
+            <select
+              className="ipfs-bar__endpoint"
+              value={authState.type}
+              onChange={(e) => updateAuth({ type: e.target.value })}
+            >
+              {AUTH_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+            {authState.type === 'basic' && (
+              <>
+                <input
+                  className="ipfs-bar__endpoint"
+                  type="text"
+                  value={authState.username || ''}
+                  onChange={(e) => updateAuth({ username: e.target.value })}
+                  placeholder="Username"
+                />
+                <input
+                  className="ipfs-bar__endpoint"
+                  type="password"
+                  value={authState.password || ''}
+                  onChange={(e) => updateAuth({ password: e.target.value })}
+                  placeholder="Password"
+                />
+              </>
+            )}
+            {authState.type === 'bearer' && (
+              <input
+                className="ipfs-bar__endpoint"
+                type="password"
+                value={authState.token || ''}
+                onChange={(e) => updateAuth({ token: e.target.value })}
+                placeholder="Bearer token"
+              />
+            )}
+            {authState.type === 'header' && (
+              <>
+                <input
+                  className="ipfs-bar__endpoint"
+                  type="text"
+                  value={authState.headerName || ''}
+                  onChange={(e) => updateAuth({ headerName: e.target.value })}
+                  placeholder="Header name"
+                />
+                <input
+                  className="ipfs-bar__endpoint"
+                  type="password"
+                  value={authState.headerValue || ''}
+                  onChange={(e) => updateAuth({ headerValue: e.target.value })}
+                  placeholder="Header value"
+                />
+              </>
+            )}
+          </>
         )}
 
         {!isConnected ? (

@@ -41,12 +41,21 @@ export async function stopHelia() {
 
 /**
  * Add a File/Blob to the local Helia node via UnixFS.
+ * Advertises the CID to the DHT so other nodes can discover this peer.
  * Returns the CID as a string.
  */
 export async function addFile(file) {
-  const { fs } = await getHelia()
+  const { helia, fs } = await getHelia()
   const bytes = new Uint8Array(await file.arrayBuffer())
   const cid = await fs.addBytes(bytes)
+
+  // Advertise to DHT so storage nodes can find this peer
+  try {
+    await helia.routing.provide(cid)
+  } catch {
+    // Best-effort — DHT provide can fail in restrictive network environments
+  }
+
   return cid.toString()
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useMyOrders } from '../../hooks/useMyOrders'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
@@ -28,9 +28,28 @@ function getOrderStatus(financials) {
   return 'active'
 }
 
-function OrderCard({ id, details, financials }) {
+function OrderCard({ id, details, financials, ipfs }) {
   const { cancelOrder, completeExpiredOrder, isPending, isConfirming, isSuccess, error } = useStorageActions()
   const [confirming, setConfirming] = useState(null) // 'cancel' | 'complete'
+  const [seedStatus, setSeedStatus] = useState(null) // null | 'seeding' | 'seeded' | 'error'
+  const [seedError, setSeedError] = useState(null)
+  const reseedInputRef = useRef(null)
+
+  const handleReseed = useCallback(async (e) => {
+    const file = e.target.files?.[0]
+    if (!file || !ipfs?.upload) return
+    setSeedStatus('seeding')
+    setSeedError(null)
+    try {
+      await ipfs.upload(file)
+      setSeedStatus('seeded')
+    } catch (err) {
+      setSeedStatus('error')
+      setSeedError(err.message || 'Failed to seed file')
+    }
+    // reset input so the same file can be re-selected
+    e.target.value = ''
+  }, [ipfs])
 
   if (!details) return null
 
@@ -85,6 +104,23 @@ function OrderCard({ id, details, financials }) {
       </div>
 
       <div className="order-card__actions">
+        {status === 'active' && !isFilled && ipfs?.isConnected && (
+          <>
+            <input
+              ref={reseedInputRef}
+              type="file"
+              onChange={handleReseed}
+              style={{ display: 'none' }}
+            />
+            <button
+              className="console-btn console-btn--primary console-btn--small"
+              onClick={() => reseedInputRef.current?.click()}
+              disabled={seedStatus === 'seeding'}
+            >
+              {seedStatus === 'seeding' ? 'Seeding...' : 'Reseed File'}
+            </button>
+          </>
+        )}
         {status === 'active' && (
           <>
             {confirming === 'cancel' ? (
@@ -124,6 +160,12 @@ function OrderCard({ id, details, financials }) {
         )}
       </div>
 
+      {seedStatus === 'seeded' && (
+        <div className="tx-status tx-status--success" style={{ gridColumn: '1 / -1' }}>File re-added to IPFS — keep this tab open until nodes pick it up</div>
+      )}
+      {seedStatus === 'error' && (
+        <div className="tx-status tx-status--error" style={{ gridColumn: '1 / -1' }}>{seedError}</div>
+      )}
       {isSuccess && (
         <div className="tx-status tx-status--success" style={{ gridColumn: '1 / -1' }}>Action completed</div>
       )}
@@ -136,7 +178,7 @@ function OrderCard({ id, details, financials }) {
   )
 }
 
-function MyOrders() {
+function MyOrders({ ipfs }) {
   const { orders, isLoading, refundBalance } = useMyOrders()
   const { withdrawRefund, isPending: refundPending, isConfirming: refundConfirming, isSuccess: refundSuccess } = useStorageActions()
   const [filter, setFilter] = useState('all')
@@ -210,7 +252,7 @@ function MyOrders() {
         ) : (
           <div style={{ display: 'grid', gap: '8px' }}>
             {filtered.map((o) => (
-              <OrderCard key={o.id.toString()} id={o.id} details={o.details} financials={o.financials} />
+              <OrderCard key={o.id.toString()} id={o.id} details={o.details} financials={o.financials} ipfs={ipfs} />
             ))}
           </div>
         )}

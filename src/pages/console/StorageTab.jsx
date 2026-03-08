@@ -5,7 +5,7 @@ function StorageTab({ ipfs }) {
   return (
     <>
       <UploadWizard ipfs={ipfs} />
-      <MyOrders />
+      <MyOrders ipfs={ipfs} />
     </>
   )
 }
