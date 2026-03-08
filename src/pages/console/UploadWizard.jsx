@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useFileUpload } from '../../hooks/useFileUpload'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { useWasm } from '../../hooks/useWasm'
@@ -57,6 +58,21 @@ function UploadWizard({ ipfs }) {
   const fileInputRef = useRef(null)
   const [dragOver, setDragOver] = useState(false)
   const { state: uploadState, file, cid, numChunks, error: uploadError, selectFile, uploadToIpfs, reset: resetUpload } = useFileUpload(ipfs.upload)
+
+  // Consume navigation state (file from drag or openPicker flag from click)
+  const location = useLocation()
+  const nav = useNavigate()
+  useEffect(() => {
+    const navState = location.state
+    if (!navState) return
+    // Clear state so it doesn't re-trigger on re-render / back navigation
+    nav(location.pathname, { replace: true, state: null })
+    if (navState.file) {
+      selectFile(navState.file)
+    } else if (navState.openPicker) {
+      fileInputRef.current?.click()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // WASM-powered file root + FSP proof
   const wasm = useWasm()

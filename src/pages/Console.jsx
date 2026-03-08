@@ -3,6 +3,7 @@ import './Console.css'
 import StorageTab from './console/StorageTab'
 import IpfsBar from './console/IpfsBar'
 import { useIpfs } from '../hooks/useIpfs'
+import WalletButton from '../components/WalletButton/WalletButton'
 
 function IconUpload() {
   return (
@@ -29,6 +30,7 @@ function Console() {
             <IconUpload />
           </div>
           <p className="console-gate__text">Connect your wallet to start uploading files</p>
+          <WalletButton />
         </div>
       </div>
     )

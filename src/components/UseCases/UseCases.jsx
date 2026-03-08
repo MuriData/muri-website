@@ -69,7 +69,8 @@ function UseCases() {
   const handleDrop = useCallback((e) => {
     e.preventDefault()
     setDragging(false)
-    navigate('/dashboard')
+    const file = e.dataTransfer?.files?.[0]
+    navigate('/console', { state: file ? { file } : { openPicker: true } })
   }, [navigate])
 
   return (
@@ -100,7 +101,7 @@ function UseCases() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => navigate('/dashboard')}
+        onClick={() => navigate('/console', { state: { openPicker: true } })}
       >
         <span className="usecases-upload__icon">⇧</span>
         <span className="usecases-upload__text">

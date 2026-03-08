@@ -32,7 +32,7 @@ function Hero() {
           Verifiable Storage or Hot Retrieval? MuriData wants both! A dream-like storage partner for blockchain-based computing platforms.
         </p>
         <div className="hero-actions">
-          <Button variant="secondary" onClick={handleExplore}>Explore</Button>
+          <Button variant="secondary" onClick={() => navigate('/console')}>Upload Files</Button>
           <Button variant="outline" onClick={() => navigate('/docs')}>Learn More</Button>
         </div>
       </div>

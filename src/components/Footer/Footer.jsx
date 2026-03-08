@@ -7,10 +7,10 @@ const navGroups = [
   {
     title: 'Protocol',
     links: [
-      { label: 'Overview', href: '#' },
-      { label: 'Whitepaper', href: '#' },
-      { label: 'Roadmap', href: '#' },
-      { label: 'Tokenomics', href: '#' },
+      { label: 'Overview', to: '/docs/architecture/overview' },
+      { label: 'Whitepaper', to: '/docs' },
+      { label: 'Roadmap', to: '/docs' },
+      { label: 'Tokenomics', to: '/docs' },
     ],
   },
   {
@@ -18,8 +18,8 @@ const navGroups = [
     links: [
       { label: 'Documentation', to: '/docs' },
       { label: 'GitHub', href: '#' },
-      { label: 'SDK Reference', href: '#' },
-      { label: 'Bug Bounty', href: '#' },
+      { label: 'SDK Reference', to: '/docs' },
+      { label: 'Bug Bounty', to: '/docs' },
     ],
   },
   {
@@ -32,11 +32,12 @@ const navGroups = [
     ],
   },
   {
-    title: 'Resources',
+    title: 'Products',
     links: [
+      { label: 'Dashboard', to: '/dashboard' },
+      { label: 'Console', to: '/console' },
       { label: 'Block Explorer', to: '/explorer' },
       { label: 'Blockscout', href: 'https://testnet-explorer.muri.moe', external: true },
-      { label: 'Brand Kit', href: '#' },
       { label: 'Blog', to: '/blog' },
     ],
   },
