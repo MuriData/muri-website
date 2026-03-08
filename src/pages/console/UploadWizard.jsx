@@ -155,17 +155,18 @@ function UploadWizard({ ipfs }) {
     })
   }
 
-  const parseCid = (uri) => {
+  // Parse IPFS URI → full ref (CID + optional path), e.g. "QmHash/wiki/"
+  const parseRef = (uri) => {
     let s = uri.trim()
     if (s.startsWith('ipfs://')) s = s.slice(7)
-    s = s.split('/')[0] // strip subpath
+    if (!s || s === '/') return ''
     return s
   }
 
   const handleImport = () => {
-    const cidStr = parseCid(uriInput)
-    if (!cidStr) return
-    importFromCid(cidStr, ipfs.fetchFile)
+    const ref = parseRef(uriInput)
+    if (!ref) return
+    importFromCid(ref, ipfs.fetchFile)
   }
 
   const handleReset = () => {
@@ -248,7 +249,7 @@ function UploadWizard({ ipfs }) {
                   <button
                     className="console-btn console-btn--primary"
                     onClick={handleImport}
-                    disabled={!parseCid(uriInput) || !ipfs.isConnected}
+                    disabled={!parseRef(uriInput) || !ipfs.isConnected}
                   >
                     Fetch
                   </button>

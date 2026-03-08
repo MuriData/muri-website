@@ -56,14 +56,22 @@ export async function addFile(file) {
 }
 
 /**
- * Fetch file bytes from the network by CID string.
+ * Fetch file bytes from the network by ref (CID or CID/path).
+ * Supports: "QmHash", "QmHash/path/to/file"
  */
-export async function catFile(cidStr) {
+export async function catFile(ref) {
   const { fs } = await getHelia()
   const { CID } = await import('multiformats/cid')
+
+  // Split ref into root CID and optional subpath
+  const slashIdx = ref.indexOf('/')
+  const cidStr = slashIdx > 0 ? ref.slice(0, slashIdx) : ref
+  const path = slashIdx > 0 ? ref.slice(slashIdx) : undefined
+
   const cid = CID.parse(cidStr)
+  const opts = path ? { path } : undefined
   const chunks = []
-  for await (const chunk of fs.cat(cid)) {
+  for await (const chunk of fs.cat(cid, opts)) {
     chunks.push(chunk)
   }
   const total = chunks.reduce((n, c) => n + c.length, 0)
