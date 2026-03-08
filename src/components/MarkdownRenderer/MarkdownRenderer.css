@@ -200,3 +200,42 @@
 .prose strong {
   font-weight: var(--weight-bold);
 }
+
+/* ── Mermaid diagrams ── */
+
+.mermaid-diagram {
+  margin: 1.5em 0;
+  display: flex;
+  justify-content: center;
+  background: var(--color-bg-surface);
+  border: var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  margin: 1.5em 0;
+  padding: var(--space-sm) var(--space-md);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  color: #991b1b;
+  font-size: var(--text-sm);
+}
+
+/* ── KaTeX overrides ── */
+
+.prose .katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+}
+
+.prose .katex {
+  font-size: 1.1em;
+}
