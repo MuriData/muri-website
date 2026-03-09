@@ -49,10 +49,17 @@ self.onmessage = async (e) => {
       self.postMessage({ id, result })
     } else if (type === 'generateProof') {
       const [pk, vk] = await loadFSPKeys()
+      const onProgress = (data) => {
+        const progress = { stage: data.stage }
+        if (data.root !== undefined) progress.root = data.root
+        if (data.numChunks !== undefined) progress.numChunks = data.numChunks
+        self.postMessage({ id, progress })
+      }
       const result = await self.muriGenerateFSPProof(
         fileBytes,
         new Uint8Array(pk),
         new Uint8Array(vk),
+        onProgress,
       )
       self.postMessage({ id, result })
     }

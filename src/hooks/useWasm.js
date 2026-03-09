@@ -37,10 +37,16 @@ export function useWasm() {
 
   const generateProof = useCallback(async (file) => {
     setIsComputing(true)
-    setStage('proof')
+    setStage('root')
     setError(null)
     try {
-      const result = await wasmGenerateFSP(file)
+      const result = await wasmGenerateFSP(file, (progress) => {
+        if (progress.stage === 'root') {
+          setRoot(progress.root)
+          setNumChunks(progress.numChunks)
+          setStage('proof')
+        }
+      })
       setRoot(result.root)
       setNumChunks(result.numChunks)
       setProof(result.proof)

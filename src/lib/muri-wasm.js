@@ -15,9 +15,13 @@ function getWorker() {
   if (!worker) {
     worker = new Worker(new URL('./muri-wasm.worker.js', import.meta.url))
     worker.onmessage = (e) => {
-      const { id, result, error } = e.data
+      const { id, result, error, progress } = e.data
       const p = pending.get(id)
       if (!p) return
+      if (progress) {
+        p.onProgress?.(progress)
+        return // still waiting for final result
+      }
       pending.delete(id)
       if (error) p.reject(new Error(error))
       else p.resolve(result)
@@ -32,10 +36,10 @@ function getWorker() {
   return worker
 }
 
-function callWorker(type, file) {
+function callWorker(type, file, onProgress) {
   return new Promise((resolve, reject) => {
     const id = nextId++
-    pending.set(id, { resolve, reject })
+    pending.set(id, { resolve, reject, onProgress })
     getWorker().postMessage({ id, type, file })
   })
 }
@@ -52,10 +56,11 @@ export function computeFileRoot(file) {
 /**
  * Generate an FSP (File Size Proof) Groth16 proof.
  * @param {File} file
+ * @param {function} [onProgress] — called with { stage, root?, numChunks? } on intermediate progress
  * @returns {Promise<{ proof: string[], root: string, numChunks: number }>}
  */
-export function generateFSPProof(file) {
-  return callWorker('generateProof', file)
+export function generateFSPProof(file, onProgress) {
+  return callWorker('generateProof', file, onProgress)
 }
 
 /**

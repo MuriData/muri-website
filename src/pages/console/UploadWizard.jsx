@@ -323,11 +323,26 @@ function UploadWizard({ ipfs }) {
           </>
         )}
 
-        {/* WASM computing indicator */}
+        {/* WASM computing — two-stage progress */}
         {wasm.isComputing && (
-          <div className="tx-status tx-status--pending">
-            <span className="tx-status__spinner" />
-            Generating Root and Proof (WASM) — this may take a while depending on your device...
+          <div className="proof-progress">
+            <div className={`proof-progress__step${wasm.stage === 'root' ? ' proof-progress__step--active' : ' proof-progress__step--done'}`}>
+              {wasm.stage === 'root'
+                ? <span className="tx-status__spinner" />
+                : <span className="proof-progress__check">✓</span>
+              }
+              <span>Computing Merkle Root</span>
+              {wasm.stage !== 'root' && wasm.numChunks > 0 && (
+                <span className="proof-progress__detail">{wasm.numChunks} chunks</span>
+              )}
+            </div>
+            <div className={`proof-progress__step${wasm.stage === 'proof' ? ' proof-progress__step--active' : ''}`}>
+              {wasm.stage === 'proof'
+                ? <span className="tx-status__spinner" />
+                : <span className="proof-progress__dot">2</span>
+              }
+              <span>Generating FSP Proof</span>
+            </div>
           </div>
         )}
 
