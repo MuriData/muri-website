@@ -4,6 +4,7 @@ import StorageTab from './console/StorageTab'
 import IpfsBar from './console/IpfsBar'
 import { useIpfs } from '../hooks/useIpfs'
 import WalletButton from '../components/WalletButton/WalletButton'
+import { FAUCET_URL } from '../lib/config'
 
 function IconUpload() {
   return (
@@ -31,6 +32,9 @@ function Console() {
           </div>
           <p className="console-gate__text">Connect your wallet to start uploading files</p>
           <WalletButton />
+          <p className="console-gate__hint">
+            Need testnet MURI tokens? Visit the <a href={FAUCET_URL} target="_blank" rel="noopener noreferrer">Testnet Faucet</a>.
+          </p>
         </div>
       </div>
     )
@@ -40,7 +44,10 @@ function Console() {
     <div className="console">
       <div className="console-header">
         <h1 className="console-title">Storage Console</h1>
-        <p className="console-subtitle">Upload files to IPFS and place storage orders on-chain</p>
+        <p className="console-subtitle">
+          Upload files to IPFS and place storage orders on-chain.
+          {' '}<a href={FAUCET_URL} target="_blank" rel="noopener noreferrer" className="console-faucet-link">Get testnet tokens</a>
+        </p>
       </div>
       <IpfsBar ipfs={ipfs} />
       <StorageTab ipfs={ipfs} />

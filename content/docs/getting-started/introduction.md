@@ -54,7 +54,7 @@ MuriData is designed as a balanced, multi-sided marketplace that provides immens
 For developers building dApps, NFT creators, or enterprises needing archival storage, MuriData offers **provable permanence**. You no longer need to run your own IPFS pinning servers or trust a centralized Web2 provider. You pay the network, and the protocol cryptographically guarantees your data is replicated, intact, and available.
 
 **How it works:**
-1. Acquire MURI tokens.
+1. Acquire MURI tokens (get free testnet tokens from the [Testnet Faucet](https://testnet-faucet.muri.moe/)).
 2. Upload your file via the MuriData Web Console or developer SDK (MuriData Platform will support S3 in the near future).
 3. The smart contract locks your payment and matching nodes automatically download and seal your data.
 

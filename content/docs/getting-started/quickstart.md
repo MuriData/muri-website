@@ -16,7 +16,7 @@ The easiest way to store data on MuriData is through the web Console.
 
 ### Prerequisites
 - A Web3 Wallet (e.g., MetaMask, Core) connected to the **MuriData L1 Network**.
-- MURI tokens to pay for storage.
+- MURI tokens to pay for storage. You can get free testnet tokens from the [Testnet Faucet](https://testnet-faucet.muri.moe/).
 
 ### Steps
 1. Navigate to the **MuriData Console** in your browser.
@@ -57,7 +57,7 @@ Anyone with spare hard drive space can earn yield by running the `murid` storage
    *Note: Safely back up the mnemonic phrase generated during this step.*
 
 3. **Fund Your Node**
-   Send MURI tokens to the EVM address generated in the previous step. You need tokens to pay for gas fees and to stake as collateral.
+   Send MURI tokens to the EVM address generated in the previous step. You need tokens to pay for gas fees and to stake as collateral. Use the [Testnet Faucet](https://testnet-faucet.muri.moe/) to get free testnet tokens.
 
 4. **Stake Collateral**
    Specify how much storage capacity (in GB) you want to offer to the network. The daemon will calculate and stake the required collateral automatically:

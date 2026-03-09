@@ -22,6 +22,9 @@ export const WARP_API = `${RPC_BASE}/ext/bc/${BLOCKCHAIN_ID}`
 export const BLOCKSCOUT_URL = 'https://testnet-explorer.muri.moe'
 export const EXPLORER_NAME = 'MuriData Testnet Alpha Explorer'
 
+// ── Faucet ──
+export const FAUCET_URL = 'https://testnet-faucet.muri.moe/'
+
 // ── IPFS ──
 export const IPFS_GATEWAY = 'https://ipfs-rpc.muri.moe/'
 export const IPFS_TOKEN = 'v17BbEqG2qlLJfz3DEvQTiTGA3ubUzVoJUD9fShNmQ4'

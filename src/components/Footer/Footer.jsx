@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import './Footer.css'
 import BrandMark from '../BrandMark/BrandMark'
 import Divider from '../Divider/Divider'
-import { BLOCKSCOUT_URL } from '../../lib/config'
+import { BLOCKSCOUT_URL, FAUCET_URL } from '../../lib/config'
 
 const navGroups = [
   {
@@ -18,9 +18,9 @@ const navGroups = [
     title: 'Developers',
     links: [
       { label: 'Documentation', to: '/docs' },
+      { label: 'Testnet Faucet', href: FAUCET_URL, external: true },
       { label: 'GitHub', href: '#' },
       { label: 'SDK Reference', to: '/docs' },
-      { label: 'Bug Bounty', to: '/docs' },
     ],
   },
   {
