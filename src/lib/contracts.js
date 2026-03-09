@@ -1,6 +1,6 @@
 // Generated from muri-contracts compiled ABIs (FileMarket + FileMarketExtension merged, NodeStaking)
 // All functions callable through the FileMarket proxy (fallback delegation to extension)
-// Deployed proxy addresses (ERC1967) on MuriData Testnet (chain 97981)
+// Deployed proxy addresses (ERC1967) on MuriData Testnet Alpha (chain 97981)
 
 export const FILE_MARKET_ADDRESS = '0xf269a406a2be691cb038203ff6bdcfc5e13acdc6'
 export const NODE_STAKING_ADDRESS = '0x171169313a60457529c04408a96772a50993b6a4'

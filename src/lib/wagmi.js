@@ -4,13 +4,13 @@ import { QueryClient } from '@tanstack/react-query'
 
 export const muriTestnet = {
   id: 97981,
-  name: 'MuriData Testnet',
+  name: 'MuriData Testnet Alpha',
   nativeCurrency: { name: 'MuriCoin', symbol: 'MURI', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://testnet-rpc.muri.moe/ext/bc/inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu/rpc'] },
   },
   blockExplorers: {
-    default: { name: 'MuriData Testnet Explorer', url: 'https://testnet-explorer.muri.moe' },
+    default: { name: 'MuriData Testnet Alpha Explorer', url: 'https://testnet-explorer.muri.moe' },
   },
   contracts: {
     multicall3: {

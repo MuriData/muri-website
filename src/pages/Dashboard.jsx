@@ -258,7 +258,7 @@ function Dashboard() {
       <div className="dashboard-header">
         <div>
           <h1 className="dashboard-title">Network Dashboard</h1>
-          <p className="dashboard-subtitle">MuriData Testnet — live on-chain data</p>
+          <p className="dashboard-subtitle">MuriData Testnet Alpha — live on-chain data</p>
         </div>
         <div className="dashboard-header__block">
           <span className="dashboard-header__dot" />
