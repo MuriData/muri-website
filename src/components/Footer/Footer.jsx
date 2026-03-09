@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import './Footer.css'
 import BrandMark from '../BrandMark/BrandMark'
 import Divider from '../Divider/Divider'
+import { BLOCKSCOUT_URL } from '../../lib/config'
 
 const navGroups = [
   {
@@ -37,7 +38,7 @@ const navGroups = [
       { label: 'Dashboard', to: '/dashboard' },
       { label: 'Console', to: '/console' },
       { label: 'Block Explorer', to: '/explorer' },
-      { label: 'Blockscout', href: 'https://testnet-explorer.muri.moe', external: true },
+      { label: 'Blockscout', href: BLOCKSCOUT_URL, external: true },
       { label: 'Blog', to: '/blog' },
     ],
   },

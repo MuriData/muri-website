@@ -11,6 +11,8 @@
     "algolia:index": "node scripts/algolia-index.js"
   },
   "dependencies": {
+    "@avalanche-sdk/client": "^0.1.1",
+    "@avalanche-sdk/interchain": "^0.1.1-alpha.1",
     "@coinbase/wallet-sdk": "^4.3.7",
     "@helia/unixfs": "^7.0.4",
     "@tanstack/react-query": "^5.90.21",

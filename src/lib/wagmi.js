@@ -1,20 +1,24 @@
 import { createConfig, createStorage, http } from 'wagmi'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { QueryClient } from '@tanstack/react-query'
+import {
+  CHAIN_ID, CHAIN_NAME, NATIVE_CURRENCY, L1_RPC,
+  BLOCKSCOUT_URL, EXPLORER_NAME, MULTICALL3_ADDRESS,
+} from './config'
 
 export const muriTestnet = {
-  id: 97981,
-  name: 'MuriData Testnet Alpha',
-  nativeCurrency: { name: 'MuriCoin', symbol: 'MURI', decimals: 18 },
+  id: CHAIN_ID,
+  name: CHAIN_NAME,
+  nativeCurrency: NATIVE_CURRENCY,
   rpcUrls: {
-    default: { http: ['https://testnet-rpc.muri.moe/ext/bc/inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu/rpc'] },
+    default: { http: [L1_RPC] },
   },
   blockExplorers: {
-    default: { name: 'MuriData Testnet Alpha Explorer', url: 'https://testnet-explorer.muri.moe' },
+    default: { name: EXPLORER_NAME, url: BLOCKSCOUT_URL },
   },
   contracts: {
     multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      address: MULTICALL3_ADDRESS,
     },
   },
   testnet: true,

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { getHelia, stopHelia, addFile as heliaAddFile, catFile as heliaCatFile, getNodeInfo as heliaInfo } from '../lib/helia'
 import { KuboClient } from '../lib/ipfs'
+import { IPFS_GATEWAY, IPFS_TOKEN } from '../lib/config'
 
 const STORAGE_KEY = 'muri_ipfs_config'
 
@@ -9,7 +10,7 @@ function loadConfig() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) return JSON.parse(raw)
   } catch { /* ignore */ }
-  return { mode: 'external', endpoint: 'https://ipfs-rpc.muri.moe/', auth: { type: 'bearer', token: 'v17BbEqG2qlLJfz3DEvQTiTGA3ubUzVoJUD9fShNmQ4' } }
+  return { mode: 'external', endpoint: IPFS_GATEWAY, auth: { type: 'bearer', token: IPFS_TOKEN } }
 }
 
 function saveConfig(cfg) {

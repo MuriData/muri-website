@@ -5,33 +5,7 @@ import {
   truncAddr,
   truncHash,
 } from '../../hooks/useExplorerData'
-import { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS } from '../../lib/contracts'
-
-const BLOCKSCOUT = 'https://testnet-explorer.muri.moe'
-
-const KNOWN_ADDRESSES = {
-  [FILE_MARKET_ADDRESS.toLowerCase()]: 'FileMarket',
-  [NODE_STAKING_ADDRESS.toLowerCase()]: 'NodeStaking',
-  ['0xca11bde05977b3631167028862be2a173976ca11']: 'Multicall3',
-}
-
-const KNOWN_SELECTORS = {
-  '0x9e9e5253': 'placeOrder',
-  '0xa1a870d9': 'executeOrder',
-  '0xe68f31e3': 'submitProof',
-  '0x514fcac7': 'cancelOrder',
-  '0x4ee7de66': 'completeExpiredOrder',
-  '0xd2926b21': 'quitOrder',
-  '0x372500ab': 'claimRewards',
-  '0xdbbbe766': 'processExpiredSlots',
-  '0x53e3c7a1': 'activateSlots',
-  '0x780a7750': 'stakeNode',
-  '0x95d426ad': 'unstakeNode',
-  '0xbb34a381': 'increaseCapacity',
-  '0xc90cbfbe': 'decreaseCapacity',
-  '0x485cc955': 'initialize',
-  '0x82ad56cb': 'aggregate3',
-}
+import { BLOCKSCOUT_URL, KNOWN_ADDRESSES, KNOWN_SELECTORS } from '../../lib/config'
 
 function labelAddress(addr) {
   if (!addr) return null
@@ -62,7 +36,7 @@ function BlockDetail() {
           <h1 className="explorer-title">Block #{num.toLocaleString()}</h1>
           <p className="explorer-subtitle">
             {isLoading ? 'Loading...' : `${transactions.length} transaction${transactions.length !== 1 ? 's' : ''}`}
-            <a href={`${BLOCKSCOUT}/block/${num}`} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
+            <a href={`${BLOCKSCOUT_URL}/block/${num}`} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
               View on Blockscout ↗
             </a>
           </p>
@@ -94,7 +68,7 @@ function BlockDetail() {
                     return (
                       <tr key={tx.hash}>
                         <td className="explorer-mono">
-                          <a href={`${BLOCKSCOUT}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
+                          <a href={`${BLOCKSCOUT_URL}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
                         </td>
                         <td>
                           <span className={`explorer-method${isKnownMethod ? ' explorer-method--known' : ''}`}>
@@ -102,17 +76,17 @@ function BlockDetail() {
                           </span>
                         </td>
                         <td className="explorer-mono">
-                          <a href={`${BLOCKSCOUT}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
+                          <a href={`${BLOCKSCOUT_URL}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
                         </td>
                         <td>
                           {isCreate ? (
                             <span className="explorer-badge explorer-badge--create">Contract Created</span>
                           ) : toLabel ? (
-                            <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
+                            <a href={`${BLOCKSCOUT_URL}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
                               <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
                             </a>
                           ) : (
-                            <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
+                            <a href={`${BLOCKSCOUT_URL}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
                           )}
                         </td>
                       </tr>

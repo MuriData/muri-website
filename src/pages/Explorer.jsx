@@ -10,34 +10,8 @@ import {
   timeAgo,
   formatGwei,
 } from '../hooks/useExplorerData'
-import { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS } from '../lib/contracts'
-
-const BLOCKSCOUT = 'https://testnet-explorer.muri.moe'
-
-// ── Known addresses & selectors ──
-const KNOWN_ADDRESSES = {
-  [FILE_MARKET_ADDRESS.toLowerCase()]: 'FileMarket',
-  [NODE_STAKING_ADDRESS.toLowerCase()]: 'NodeStaking',
-  ['0xca11bde05977b3631167028862be2a173976ca11']: 'Multicall3',
-}
-
-const KNOWN_SELECTORS = {
-  '0x9e9e5253': 'placeOrder',
-  '0xa1a870d9': 'executeOrder',
-  '0xe68f31e3': 'submitProof',
-  '0x514fcac7': 'cancelOrder',
-  '0x4ee7de66': 'completeExpiredOrder',
-  '0xd2926b21': 'quitOrder',
-  '0x372500ab': 'claimRewards',
-  '0xdbbbe766': 'processExpiredSlots',
-  '0x53e3c7a1': 'activateSlots',
-  '0x780a7750': 'stakeNode',
-  '0x95d426ad': 'unstakeNode',
-  '0xbb34a381': 'increaseCapacity',
-  '0xc90cbfbe': 'decreaseCapacity',
-  '0x485cc955': 'initialize',
-  '0x82ad56cb': 'aggregate3',
-}
+import { BLOCKSCOUT_URL, KNOWN_ADDRESSES, KNOWN_SELECTORS } from '../lib/config'
+import ValidatorsTab from './explorer/ValidatorsTab'
 
 function labelAddress(addr) {
   if (!addr) return null
@@ -112,7 +86,7 @@ function Explorer() {
           <h1 className="explorer-title">Block Explorer</h1>
           <p className="explorer-subtitle">
             MuriData Testnet Alpha
-            <a href={BLOCKSCOUT} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
+            <a href={BLOCKSCOUT_URL} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
               View on Blockscout ↗
             </a>
           </p>
@@ -211,7 +185,7 @@ function Explorer() {
                         </td>
                         <td>{b.size != null ? `${Number(b.size).toLocaleString()} B` : '—'}</td>
                         <td className="explorer-mono">
-                          <a href={`${BLOCKSCOUT}/block/${b.number}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(b.hash)}</a>
+                          <a href={`${BLOCKSCOUT_URL}/block/${b.number}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(b.hash)}</a>
                         </td>
                       </tr>
                     )
@@ -283,7 +257,7 @@ function Explorer() {
                         return (
                           <tr key={tx.hash}>
                             <td className="explorer-mono">
-                              <a href={`${BLOCKSCOUT}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
+                              <a href={`${BLOCKSCOUT_URL}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncHash(tx.hash)}</a>
                             </td>
                             <td>
                               <span className={`explorer-method${isKnownMethod ? ' explorer-method--known' : ''}`}>
@@ -297,17 +271,17 @@ function Explorer() {
                             </td>
                             <td>{timeAgo(tx.timestamp)}</td>
                             <td className="explorer-mono">
-                              <a href={`${BLOCKSCOUT}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
+                              <a href={`${BLOCKSCOUT_URL}/address/${tx.from}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">{truncAddr(tx.from)}</a>
                             </td>
                             <td>
                               {isCreate ? (
                                 <span className="explorer-badge explorer-badge--create">Deploy</span>
                               ) : toLabel ? (
-                                <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
+                                <a href={`${BLOCKSCOUT_URL}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link">
                                   <span className="explorer-badge explorer-badge--contract">{toLabel}</span>
                                 </a>
                               ) : (
-                                <a href={`${BLOCKSCOUT}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
+                                <a href={`${BLOCKSCOUT_URL}/address/${tx.to}`} target="_blank" rel="noopener noreferrer" className="explorer-ext-link explorer-mono">{truncAddr(tx.to)}</a>
                               )}
                             </td>
                           </tr>
@@ -365,74 +339,11 @@ function Explorer() {
         )}
 
         {activeTab === 'validators' && (
-          <div className="explorer-panel">
-            {valsLoading ? (
-              <div className="explorer-loading"><div className="explorer-loading__spinner" /></div>
-            ) : valsError ? (
-              <p className="explorer-empty">Unable to fetch validators: {valsError}</p>
-            ) : validators.length === 0 ? (
-              <p className="explorer-empty">No validators found for this subnet</p>
-            ) : (
-              <>
-                {/* Desktop table */}
-                <div className="explorer-table-wrap explorer-desktop">
-                  <table className="explorer-table">
-                    <thead>
-                      <tr>
-                        <th>Node ID</th>
-                        <th>Weight</th>
-                        <th>Balance</th>
-                        <th>Validation ID</th>
-                        <th>Start</th>
-                        <th>BLS Public Key</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {validators.map((v) => (
-                        <tr key={v.nodeID}>
-                          <td className="explorer-mono">{v.nodeID.length > 24 ? `${v.nodeID.slice(0, 16)}...${v.nodeID.slice(-8)}` : v.nodeID}</td>
-                          <td>
-                            <span className="explorer-badge explorer-badge--tx">{v.weight}</span>
-                          </td>
-                          <td>{(Number(v.balance) / 1e9).toLocaleString(undefined, { maximumFractionDigits: 4 })} AVAX</td>
-                          <td className="explorer-mono">{v.validationID ? `${v.validationID.slice(0, 12)}...${v.validationID.slice(-6)}` : '—'}</td>
-                          <td>{new Date(v.startTime * 1000).toLocaleDateString()}</td>
-                          <td className="explorer-mono">{v.publicKey ? `${v.publicKey.slice(0, 14)}...${v.publicKey.slice(-8)}` : '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {/* Mobile cards */}
-                <div className="explorer-cards explorer-mobile">
-                  {validators.map((v) => (
-                    <div key={v.nodeID} className="explorer-card">
-                      <div className="explorer-card__head">
-                        <span className="explorer-mono" style={{ fontSize: '0.7rem' }}>
-                          {v.nodeID.length > 20 ? `${v.nodeID.slice(0, 14)}...${v.nodeID.slice(-6)}` : v.nodeID}
-                        </span>
-                        <span className="explorer-badge explorer-badge--tx">{v.weight}</span>
-                      </div>
-                      <div className="explorer-card__rows">
-                        <div className="explorer-card__row">
-                          <span>Balance</span>
-                          <span>{(Number(v.balance) / 1e9).toLocaleString(undefined, { maximumFractionDigits: 4 })} AVAX</span>
-                        </div>
-                        <div className="explorer-card__row">
-                          <span>Start</span>
-                          <span>{new Date(v.startTime * 1000).toLocaleDateString()}</span>
-                        </div>
-                        <div className="explorer-card__row">
-                          <span>Validation ID</span>
-                          <span className="explorer-mono" style={{ fontSize: '0.7rem' }}>{v.validationID ? `${v.validationID.slice(0, 10)}...${v.validationID.slice(-4)}` : '—'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          <ValidatorsTab
+            validators={validators}
+            valsLoading={valsLoading}
+            valsError={valsError}
+          />
         )}
       </div>
     </div>

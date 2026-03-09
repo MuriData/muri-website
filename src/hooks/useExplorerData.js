@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPublicClient, http, formatEther, formatGwei } from 'viem'
 import { getSubnetValidators } from '../lib/avalanche'
-
-const RPC_URL = 'https://testnet-rpc.muri.moe/ext/bc/inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu/rpc'
+import { L1_RPC } from '../lib/config'
 
 const client = createPublicClient({
-  transport: http(RPC_URL),
+  transport: http(L1_RPC),
 })
 
 const BLOCK_POLL = 10_000

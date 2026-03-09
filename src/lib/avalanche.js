@@ -1,14 +1,9 @@
 // Avalanche Platform API helpers for validator/subnet info
-// Base URL derived from the EVM RPC endpoint
 
-const RPC_BASE = 'https://testnet-rpc.muri.moe'
-const PLATFORM_URL = `${RPC_BASE}/ext/bc/P`
-
-// The blockchain ID from our RPC path
-const BLOCKCHAIN_ID = 'inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu'
+import { PLATFORM_API, BLOCKCHAIN_ID } from './config'
 
 async function platformCall(method, params = {}) {
-  const res = await fetch(PLATFORM_URL, {
+  const res = await fetch(PLATFORM_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),

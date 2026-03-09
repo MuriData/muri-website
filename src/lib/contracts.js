@@ -1,9 +1,211 @@
 // Generated from muri-contracts compiled ABIs (FileMarket + FileMarketExtension merged, NodeStaking)
 // All functions callable through the FileMarket proxy (fallback delegation to extension)
-// Deployed proxy addresses (ERC1967) on MuriData Testnet Alpha (chain 97981)
+// Contract addresses are centralized in config.js — re-exported here for convenience.
 
-export const FILE_MARKET_ADDRESS = '0xf269a406a2be691cb038203ff6bdcfc5e13acdc6'
-export const NODE_STAKING_ADDRESS = '0x171169313a60457529c04408a96772a50993b6a4'
+export { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS, VALIDATOR_MANAGER_ADDRESS } from './config'
+
+// Avalanche ValidatorManager (ACP-99) — PoA proxy deployed on MuriData Testnet Alpha
+// Read functions: getValidator, l1TotalWeight, subnetID, getChurnTracker, owner, etc.
+// Write functions (onlyOwner): initiateValidatorRegistration, completeValidatorRegistration, etc.
+export const VALIDATOR_MANAGER_ABI = [
+  {
+    "type": "function",
+    "name": "getValidator",
+    "inputs": [{ "name": "validationID", "type": "bytes32" }],
+    "outputs": [{
+      "name": "",
+      "type": "tuple",
+      "components": [
+        { "name": "status", "type": "uint8" },
+        { "name": "nodeID", "type": "bytes" },
+        { "name": "startingWeight", "type": "uint64" },
+        { "name": "sentNonce", "type": "uint64" },
+        { "name": "receivedNonce", "type": "uint64" },
+        { "name": "weight", "type": "uint64" },
+        { "name": "startTime", "type": "uint64" },
+        { "name": "endTime", "type": "uint64" }
+      ]
+    }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "l1TotalWeight",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint64" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "subnetID",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isValidatorSetInitialized",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getNodeValidationID",
+    "inputs": [{ "name": "nodeID", "type": "bytes" }],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getChurnTracker",
+    "inputs": [],
+    "outputs": [{
+      "name": "",
+      "type": "tuple",
+      "components": [
+        { "name": "churnAmount", "type": "uint64" },
+        { "name": "startedAt", "type": "uint64" },
+        { "name": "initialWeight", "type": "uint64" }
+      ]
+    }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initiateValidatorRegistration",
+    "inputs": [
+      { "name": "nodeID", "type": "bytes" },
+      { "name": "blsPublicKey", "type": "bytes" },
+      { "name": "registrationExpiry", "type": "uint64" },
+      {
+        "name": "remainingBalanceOwner",
+        "type": "tuple",
+        "components": [
+          { "name": "threshold", "type": "uint32" },
+          { "name": "addresses", "type": "address[]" }
+        ]
+      },
+      {
+        "name": "disableOwner",
+        "type": "tuple",
+        "components": [
+          { "name": "threshold", "type": "uint32" },
+          { "name": "addresses", "type": "address[]" }
+        ]
+      },
+      { "name": "weight", "type": "uint64" }
+    ],
+    "outputs": [{ "name": "validationID", "type": "bytes32" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "completeValidatorRegistration",
+    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
+    "outputs": [{ "name": "validationID", "type": "bytes32" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "initiateValidatorRemoval",
+    "inputs": [{ "name": "validationID", "type": "bytes32" }],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "completeValidatorRemoval",
+    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
+    "outputs": [{ "name": "validationID", "type": "bytes32" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "initiateValidatorWeightUpdate",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "weight", "type": "uint64" }
+    ],
+    "outputs": [
+      { "name": "nonce", "type": "uint64" },
+      { "name": "messageID", "type": "bytes32" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "completeValidatorWeightUpdate",
+    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
+    "outputs": [
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "nonce", "type": "uint64" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "InitiatedValidatorRegistration",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true },
+      { "name": "nodeID", "type": "bytes20", "indexed": true },
+      { "name": "registrationMessageID", "type": "bytes32", "indexed": false },
+      { "name": "registrationExpiry", "type": "uint64", "indexed": false },
+      { "name": "weight", "type": "uint64", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "CompletedValidatorRegistration",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true },
+      { "name": "weight", "type": "uint64", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "InitiatedValidatorRemoval",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true },
+      { "name": "validatorWeightMessageID", "type": "bytes32", "indexed": false },
+      { "name": "weight", "type": "uint64", "indexed": false },
+      { "name": "endTime", "type": "uint64", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "CompletedValidatorRemoval",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "InitiatedValidatorWeightUpdate",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true },
+      { "name": "nonce", "type": "uint64", "indexed": false },
+      { "name": "weightUpdateMessageID", "type": "bytes32", "indexed": false },
+      { "name": "weight", "type": "uint64", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "CompletedValidatorWeightUpdate",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32", "indexed": true },
+      { "name": "nonce", "type": "uint64", "indexed": false },
+      { "name": "weight", "type": "uint64", "indexed": false }
+    ]
+  }
+]
 
 export const FILE_MARKET_ABI = [
   {

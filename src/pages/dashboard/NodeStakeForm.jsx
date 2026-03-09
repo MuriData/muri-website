@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { useStakeNode } from '../../hooks/useNodeActions'
 import { formatMuri } from '../../hooks/useDashboardData'
-
-const STAKE_PER_CHUNK = 400000000000000n // 4 * 10^14 wei
-const CHUNK_BYTES = 16384 // 16 KB
-const SNARK_SCALAR_FIELD = 0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001n
+import { STAKE_PER_CHUNK, CHUNK_BYTES, SNARK_SCALAR_FIELD } from '../../lib/config'
 
 const UNITS = [
   { label: 'Chunks', bytes: CHUNK_BYTES },

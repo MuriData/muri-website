@@ -531,3 +531,366 @@
   .explorer-tabs { grid-column: 1 / -1; }
   .explorer-content { grid-column: 1 / -1; }
 }
+
+/* ── ValidatorManager: Network Stats Bar ── */
+.vm-network-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.vm-network-bar__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.vm-network-bar__stat--wide {
+  min-width: 200px;
+}
+
+.vm-network-bar__label {
+  font-family: var(--font-main);
+  font-size: 0.65rem;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+}
+
+.vm-network-bar__value {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* ── ValidatorManager: Owner Actions Panel ── */
+.vm-owner-panel {
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  background: linear-gradient(135deg, rgba(41, 215, 220, 0.06), rgba(178, 242, 244, 0.04));
+  border: 1px solid var(--color-teal);
+  border-radius: var(--radius-md);
+}
+
+.vm-owner-panel__title {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-teal);
+  margin: 0 0 var(--space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vm-owner-panel__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-xs);
+}
+
+.vm-action-btn {
+  font-family: var(--font-main);
+  font-size: 0.7rem;
+  font-weight: var(--weight-semibold);
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.vm-action-btn:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.vm-action-btn--active {
+  background: var(--color-teal);
+  color: white;
+  border-color: var(--color-teal);
+}
+
+.vm-action-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--color-border);
+}
+
+.vm-action-form input,
+.vm-action-form select {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.vm-action-form input:focus,
+.vm-action-form select:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 2px rgba(41, 215, 220, 0.15);
+}
+
+.vm-action-form input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+.vm-action-form__footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vm-action-submit {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-teal);
+  color: white;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.vm-action-submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.vm-action-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vm-action-cancel {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.vm-action-success {
+  font-size: var(--text-sm);
+  color: #22c55e;
+  margin: 4px 0 0;
+}
+
+.vm-action-error {
+  font-size: var(--text-sm);
+  color: #e87c6c;
+  margin: 4px 0 0;
+  word-break: break-word;
+}
+
+/* ── ValidatorManager: Wizard ── */
+.vm-wizard {
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-teal);
+  border-radius: var(--radius-md);
+}
+
+.vm-wizard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.vm-wizard__header h3 {
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.vm-wizard__header .vm-action-cancel {
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 4px 8px;
+  border: none;
+}
+
+.vm-wizard__body {
+  padding-top: var(--space-xs);
+}
+
+.vm-wizard__desc {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-sm);
+  line-height: 1.5;
+}
+
+.vm-wizard__hash {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background: var(--color-canvas);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-sm);
+  word-break: break-all;
+}
+
+.vm-wizard__detail {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.vm-wizard__success {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  padding: var(--space-sm) 0;
+}
+
+/* ── ValidatorManager: Step Indicator ── */
+.vm-steps {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--space-sm);
+  padding: var(--space-xs) 0;
+  overflow-x: auto;
+}
+
+.vm-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vm-step--done {
+  background: rgba(41, 215, 220, 0.1);
+}
+
+.vm-step--active {
+  background: var(--color-teal);
+}
+
+.vm-step__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-family: var(--font-main);
+  font-size: 0.6rem;
+  font-weight: var(--weight-bold);
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.vm-step--done .vm-step__num {
+  background: var(--color-teal);
+  color: white;
+}
+
+.vm-step--active .vm-step__num {
+  background: white;
+  color: var(--color-teal);
+}
+
+.vm-step__label {
+  font-family: var(--font-main);
+  font-size: 0.65rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.vm-step--done .vm-step__label {
+  color: var(--color-teal);
+}
+
+.vm-step--active .vm-step__label {
+  color: white;
+}
+
+/* ── ValidatorManager: Form Labels ── */
+.vm-form-label {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  display: block;
+  margin-top: 4px;
+}
+
+.vm-form-label span {
+  font-weight: var(--weight-regular);
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── ValidatorManager: Core Wallet ── */
+.vm-core-warning {
+  font-size: 0.7rem;
+  font-weight: var(--weight-regular);
+  color: #e87c6c;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.vm-core-install {
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: var(--space-xs) 0 0;
+  line-height: 1.5;
+}
+
+.vm-core-install a {
+  color: var(--color-teal);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+.vm-core-install a:hover {
+  text-decoration: underline;
+}
+
+.vm-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vm-action-btn:disabled:hover {
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
