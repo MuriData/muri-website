@@ -1,13 +1,19 @@
-// Avalanche SDK wallet integration for P-Chain operations via Core wallet
+// Avalanche SDK wallet integration for P-Chain operations via Core wallet.
+// Uses @avalanche-sdk/client which is browser-compatible with Vite node polyfills.
 // Used for validator management (register, remove, weight update) which requires
 // cross-chain Warp messages between the L1 and P-Chain.
 
 import { createAvalancheWalletClient } from '@avalanche-sdk/client'
-import { avaxToNanoAvax } from '@avalanche-sdk/client/utils'
+import '@avalanche-sdk/client/window'
 import {
   CHAIN_ID, CHAIN_NAME, NETWORK_SLUG, L1_RPC, PLATFORM_API, WARP_API,
   WARP_PRECOMPILE, SEND_WARP_MESSAGE_TOPIC,
 } from './config'
+
+/** Convert AVAX to nanoAVAX (1 AVAX = 10^9 nAVAX). */
+export function avaxToNanoAvax(avax) {
+  return BigInt(Math.round(avax * 1e9))
+}
 
 /**
  * Check if Core wallet extension is available.
@@ -129,7 +135,6 @@ export async function aggregateWarpSignatures(unsignedMessageHex) {
       params: {
         message: unsignedMessageHex,
         quorumNum: 67,
-        // empty subnetID means use the L1's own subnet
       },
     }),
   })
@@ -147,21 +152,20 @@ export async function aggregateWarpSignatures(unsignedMessageHex) {
  *
  * @param walletClient - Avalanche wallet client (from createCoreWalletClient)
  * @param params.signedWarpMessage - Aggregated signed Warp message hex
+ * @param params.blsSignature - BLS signature hex (from the validator's BLS key)
  * @param params.initialBalanceAvax - Initial AVAX balance for the validator (in AVAX, e.g. 0.1)
  */
-export async function submitRegisterL1ValidatorTx(walletClient, { signedWarpMessage, initialBalanceAvax }) {
+export async function submitRegisterL1ValidatorTx(walletClient, { signedWarpMessage, blsSignature, initialBalanceAvax }) {
   const prepared = await walletClient.pChain.prepareRegisterL1ValidatorTxn({
     initialBalanceInAvax: avaxToNanoAvax(initialBalanceAvax),
+    blsSignature: blsSignature || '0x',
     message: signedWarpMessage,
   })
 
-  const { txHash } = await walletClient.sendXPTransaction({
-    ...prepared,
-    chainAlias: 'P',
-  })
+  const txHash = await walletClient.sendXPTransaction(prepared)
 
   // Wait for P-Chain confirmation
-  await walletClient.waitForTxn({ txHash, chainAlias: 'P' })
+  await walletClient.waitForTxn({ txID: txHash, chainAlias: 'P' })
 
   return txHash
 }
@@ -175,26 +179,17 @@ export async function submitSetL1ValidatorWeightTx(walletClient, { signedWarpMes
     message: signedWarpMessage,
   })
 
-  const { txHash } = await walletClient.sendXPTransaction({
-    ...prepared,
-    chainAlias: 'P',
-  })
+  const txHash = await walletClient.sendXPTransaction(prepared)
 
-  await walletClient.waitForTxn({ txHash, chainAlias: 'P' })
+  await walletClient.waitForTxn({ txID: txHash, chainAlias: 'P' })
 
   return txHash
 }
 
 /**
  * Get the P-Chain signed acknowledgement Warp message after a P-Chain validator tx.
- * This queries the node for the L1ValidatorRegistrationMessage or L1ValidatorWeightMessage
- * that the P-Chain signed in response to the validator change.
- *
- * The L1 validators can verify P-Chain messages (since they track the P-Chain),
- * so the aggregation is done by the L1 node.
  */
 export async function getPChainAckWarpMessage(pChainTxHash) {
-  // Query the P-Chain for the tx to get the validation ID
   const pRes = await fetch(PLATFORM_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -210,5 +205,3 @@ export async function getPChainAckWarpMessage(pChainTxHash) {
 
   return pJson.result
 }
-
-export { avaxToNanoAvax }
