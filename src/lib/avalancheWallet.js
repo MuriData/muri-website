@@ -205,3 +205,28 @@ export async function getPChainAckWarpMessage(pChainTxHash) {
 
   return pJson.result
 }
+
+/**
+ * Pack a signed Warp message into an EVM access list entry.
+ * The Avalanche Warp precompile reads messages from the access list
+ * and pre-verifies BLS signatures before the transaction executes.
+ *
+ * Format: [paddingLength(1 byte)] [zero padding] [message bytes]
+ * Split into 32-byte storage keys on the Warp precompile address.
+ */
+export function packWarpIntoAccessList(signedMessageHex) {
+  const data = signedMessageHex.startsWith('0x') ? signedMessageHex.slice(2) : signedMessageHex
+  const dataBytes = data.length / 2
+
+  // Padding: align (1 + padding + data) to 32-byte boundary
+  const paddingBytes = (32 - ((1 + dataBytes) % 32)) % 32
+  const packed = paddingBytes.toString(16).padStart(2, '0') + '00'.repeat(paddingBytes) + data
+
+  // Split into 32-byte (64 hex char) storage keys
+  const storageKeys = []
+  for (let i = 0; i < packed.length; i += 64) {
+    storageKeys.push('0x' + packed.slice(i, i + 64).padEnd(64, '0'))
+  }
+
+  return [{ address: WARP_PRECOMPILE, storageKeys }]
+}

@@ -2,209 +2,233 @@
 // All functions callable through the FileMarket proxy (fallback delegation to extension)
 // Contract addresses are centralized in config.js — re-exported here for convenience.
 
-export { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS, VALIDATOR_MANAGER_ADDRESS } from './config'
+export { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS, STAKING_MANAGER_ADDRESS } from './config'
 
-// Avalanche ValidatorManager (ACP-99) — PoA proxy deployed on MuriData Testnet Alpha
-// Read functions: getValidator, l1TotalWeight, subnetID, getChurnTracker, owner, etc.
-// Write functions (onlyOwner): initiateValidatorRegistration, completeValidatorRegistration, etc.
-export const VALIDATOR_MANAGER_ABI = [
+// ── NativeTokenStakingManager (PoS) ──
+// Deployed at STAKING_MANAGER_ADDRESS. Permissionless staking with native tokens.
+// Includes validator registration (payable), delegation, rewards, and PoS reads.
+// The base ValidatorManager (getValidator, l1TotalWeight, etc.) lives at a
+// separate address discovered via getStakingManagerSettings().manager.
+export const STAKING_MANAGER_ABI = [
+  // ── Reads ──
   {
-    "type": "function",
-    "name": "getValidator",
-    "inputs": [{ "name": "validationID", "type": "bytes32" }],
-    "outputs": [{
-      "name": "",
-      "type": "tuple",
-      "components": [
-        { "name": "status", "type": "uint8" },
-        { "name": "nodeID", "type": "bytes" },
-        { "name": "startingWeight", "type": "uint64" },
-        { "name": "sentNonce", "type": "uint64" },
-        { "name": "receivedNonce", "type": "uint64" },
-        { "name": "weight", "type": "uint64" },
-        { "name": "startTime", "type": "uint64" },
-        { "name": "endTime", "type": "uint64" }
-      ]
-    }],
+    "type": "function", "name": "getStakingManagerSettings", "inputs": [],
+    "outputs": [{ "name": "", "type": "tuple", "components": [
+      { "name": "manager", "type": "address" },
+      { "name": "minimumStakeAmount", "type": "uint256" },
+      { "name": "maximumStakeAmount", "type": "uint256" },
+      { "name": "minimumStakeDuration", "type": "uint64" },
+      { "name": "minimumDelegationFeeBips", "type": "uint16" },
+      { "name": "maximumStakeMultiplier", "type": "uint8" },
+      { "name": "weightToValueFactor", "type": "uint256" },
+      { "name": "rewardCalculator", "type": "address" },
+      { "name": "uptimeBlockchainID", "type": "bytes32" }
+    ]}],
     "stateMutability": "view"
   },
   {
-    "type": "function",
-    "name": "l1TotalWeight",
-    "inputs": [],
+    "type": "function", "name": "getStakingValidator",
+    "inputs": [{ "name": "validationID", "type": "bytes32" }],
+    "outputs": [{ "name": "", "type": "tuple", "components": [
+      { "name": "owner", "type": "address" },
+      { "name": "delegationFeeBips", "type": "uint16" },
+      { "name": "minStakeDuration", "type": "uint64" },
+      { "name": "uptimeSeconds", "type": "uint64" }
+    ]}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function", "name": "getDelegatorInfo",
+    "inputs": [{ "name": "delegationID", "type": "bytes32" }],
+    "outputs": [{ "name": "", "type": "tuple", "components": [
+      { "name": "status", "type": "uint8" },
+      { "name": "owner", "type": "address" },
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "weight", "type": "uint64" },
+      { "name": "startTime", "type": "uint64" },
+      { "name": "startingNonce", "type": "uint64" },
+      { "name": "endingNonce", "type": "uint64" }
+    ]}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function", "name": "weightToValue",
+    "inputs": [{ "name": "weight", "type": "uint64" }],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function", "name": "valueToWeight",
+    "inputs": [{ "name": "value", "type": "uint256" }],
     "outputs": [{ "name": "", "type": "uint64" }],
     "stateMutability": "view"
   },
+  // ── Writes ──
   {
-    "type": "function",
-    "name": "subnetID",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "bytes32" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "isValidatorSetInitialized",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getNodeValidationID",
-    "inputs": [{ "name": "nodeID", "type": "bytes" }],
-    "outputs": [{ "name": "", "type": "bytes32" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getChurnTracker",
-    "inputs": [],
-    "outputs": [{
-      "name": "",
-      "type": "tuple",
-      "components": [
-        { "name": "churnAmount", "type": "uint64" },
-        { "name": "startedAt", "type": "uint64" },
-        { "name": "initialWeight", "type": "uint64" }
-      ]
-    }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "initiateValidatorRegistration",
+    "type": "function", "name": "initiateValidatorRegistration",
     "inputs": [
       { "name": "nodeID", "type": "bytes" },
       { "name": "blsPublicKey", "type": "bytes" },
-      { "name": "registrationExpiry", "type": "uint64" },
-      {
-        "name": "remainingBalanceOwner",
-        "type": "tuple",
-        "components": [
-          { "name": "threshold", "type": "uint32" },
-          { "name": "addresses", "type": "address[]" }
-        ]
-      },
-      {
-        "name": "disableOwner",
-        "type": "tuple",
-        "components": [
-          { "name": "threshold", "type": "uint32" },
-          { "name": "addresses", "type": "address[]" }
-        ]
-      },
-      { "name": "weight", "type": "uint64" }
+      { "name": "remainingBalanceOwner", "type": "tuple", "components": [
+        { "name": "threshold", "type": "uint32" },
+        { "name": "addresses", "type": "address[]" }
+      ]},
+      { "name": "disableOwner", "type": "tuple", "components": [
+        { "name": "threshold", "type": "uint32" },
+        { "name": "addresses", "type": "address[]" }
+      ]},
+      { "name": "delegationFeeBips", "type": "uint16" },
+      { "name": "minStakeDuration", "type": "uint64" },
+      { "name": "rewardRecipient", "type": "address" }
     ],
-    "outputs": [{ "name": "validationID", "type": "bytes32" }],
-    "stateMutability": "nonpayable"
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "payable"
   },
   {
-    "type": "function",
-    "name": "completeValidatorRegistration",
+    "type": "function", "name": "completeValidatorRegistration",
     "inputs": [{ "name": "messageIndex", "type": "uint32" }],
-    "outputs": [{ "name": "validationID", "type": "bytes32" }],
+    "outputs": [{ "name": "", "type": "bytes32" }],
     "stateMutability": "nonpayable"
   },
   {
-    "type": "function",
-    "name": "initiateValidatorRemoval",
+    "type": "function", "name": "initiateValidatorRemoval",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "includeUptimeProof", "type": "bool" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "forceInitiateValidatorRemoval",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "includeUptimeProof", "type": "bool" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "completeValidatorRemoval",
+    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "initiateDelegatorRegistration",
+    "inputs": [
+      { "name": "validationID", "type": "bytes32" },
+      { "name": "rewardRecipient", "type": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function", "name": "completeDelegatorRegistration",
+    "inputs": [
+      { "name": "delegationID", "type": "bytes32" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "initiateDelegatorRemoval",
+    "inputs": [
+      { "name": "delegationID", "type": "bytes32" },
+      { "name": "includeUptimeProof", "type": "bool" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "forceInitiateDelegatorRemoval",
+    "inputs": [
+      { "name": "delegationID", "type": "bytes32" },
+      { "name": "includeUptimeProof", "type": "bool" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "completeDelegatorRemoval",
+    "inputs": [
+      { "name": "delegationID", "type": "bytes32" },
+      { "name": "messageIndex", "type": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function", "name": "claimDelegationFees",
     "inputs": [{ "name": "validationID", "type": "bytes32" }],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
   {
-    "type": "function",
-    "name": "completeValidatorRemoval",
-    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
-    "outputs": [{ "name": "validationID", "type": "bytes32" }],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "initiateValidatorWeightUpdate",
+    "type": "function", "name": "submitUptimeProof",
     "inputs": [
       { "name": "validationID", "type": "bytes32" },
-      { "name": "weight", "type": "uint64" }
+      { "name": "messageIndex", "type": "uint32" }
     ],
-    "outputs": [
-      { "name": "nonce", "type": "uint64" },
-      { "name": "messageID", "type": "bytes32" }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable"
   },
+]
+
+// ── Base ValidatorManager ──
+// Address discovered at runtime via getStakingManagerSettings().manager.
+// Holds the L1 validator set state: validator records, total weight, subnet ID.
+export const VALIDATOR_MANAGER_ABI = [
   {
-    "type": "function",
-    "name": "completeValidatorWeightUpdate",
-    "inputs": [{ "name": "messageIndex", "type": "uint32" }],
-    "outputs": [
-      { "name": "validationID", "type": "bytes32" },
-      { "name": "nonce", "type": "uint64" }
-    ],
-    "stateMutability": "nonpayable"
+    "type": "function", "name": "getValidator",
+    "inputs": [{ "name": "validationID", "type": "bytes32" }],
+    "outputs": [{ "name": "", "type": "tuple", "components": [
+      { "name": "status", "type": "uint8" },
+      { "name": "nodeID", "type": "bytes" },
+      { "name": "startingWeight", "type": "uint64" },
+      { "name": "sentNonce", "type": "uint64" },
+      { "name": "receivedNonce", "type": "uint64" },
+      { "name": "weight", "type": "uint64" },
+      { "name": "startTime", "type": "uint64" },
+      { "name": "endTime", "type": "uint64" }
+    ]}],
+    "stateMutability": "view"
   },
   {
-    "type": "event",
-    "name": "InitiatedValidatorRegistration",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true },
-      { "name": "nodeID", "type": "bytes20", "indexed": true },
-      { "name": "registrationMessageID", "type": "bytes32", "indexed": false },
-      { "name": "registrationExpiry", "type": "uint64", "indexed": false },
-      { "name": "weight", "type": "uint64", "indexed": false }
-    ]
+    "type": "function", "name": "l1TotalWeight",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint64" }],
+    "stateMutability": "view"
   },
   {
-    "type": "event",
-    "name": "CompletedValidatorRegistration",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true },
-      { "name": "weight", "type": "uint64", "indexed": false }
-    ]
+    "type": "function", "name": "subnetID",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "view"
   },
   {
-    "type": "event",
-    "name": "InitiatedValidatorRemoval",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true },
-      { "name": "validatorWeightMessageID", "type": "bytes32", "indexed": false },
-      { "name": "weight", "type": "uint64", "indexed": false },
-      { "name": "endTime", "type": "uint64", "indexed": false }
-    ]
+    "type": "function", "name": "isValidatorSetInitialized",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
   },
   {
-    "type": "event",
-    "name": "CompletedValidatorRemoval",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true }
-    ]
+    "type": "function", "name": "getNodeValidationID",
+    "inputs": [{ "name": "nodeID", "type": "bytes" }],
+    "outputs": [{ "name": "", "type": "bytes32" }],
+    "stateMutability": "view"
   },
   {
-    "type": "event",
-    "name": "InitiatedValidatorWeightUpdate",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true },
-      { "name": "nonce", "type": "uint64", "indexed": false },
-      { "name": "weightUpdateMessageID", "type": "bytes32", "indexed": false },
-      { "name": "weight", "type": "uint64", "indexed": false }
-    ]
+    "type": "function", "name": "owner",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
   },
-  {
-    "type": "event",
-    "name": "CompletedValidatorWeightUpdate",
-    "inputs": [
-      { "name": "validationID", "type": "bytes32", "indexed": true },
-      { "name": "nonce", "type": "uint64", "indexed": false },
-      { "name": "weight", "type": "uint64", "indexed": false }
-    ]
-  }
 ]
 
 export const FILE_MARKET_ABI = [

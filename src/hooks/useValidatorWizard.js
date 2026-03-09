@@ -9,28 +9,21 @@ import {
 } from '../lib/avalancheWallet'
 
 /**
- * Wizard steps for validator registration:
- *  1. form        — Fill in nodeID, BLS key, weight, initial AVAX balance
- *  2. initiate    — Call initiateValidatorRegistration on L1 (EVM tx via wagmi)
+ * Wizard steps for all validator/delegation operations:
+ *  1. form        — Fill in parameters (nodeID, BLS key, stake, delegation fee, etc.)
+ *  2. initiate    — Call initiate* on L1 (EVM tx via wagmi)
  *  3. aggregate   — Extract Warp message from L1 tx, aggregate L1 validator signatures
- *  4. pchain      — Sign & submit RegisterL1ValidatorTx to P-Chain via Core wallet
- *  5. complete    — Call completeValidatorRegistration on L1 with P-Chain ack Warp message
+ *  4. pchain      — Sign & submit P-Chain tx via Core wallet
+ *  5. complete    — Call complete* on L1 with P-Chain ack Warp message
  *  6. done        — Success
  *
- * For removal:
- *  1. select      — Pick validator to remove
- *  2. initiate    — Call initiateValidatorRemoval on L1
- *  3. aggregate   — Extract Warp message, aggregate signatures
- *  4. pchain      — Submit SetL1ValidatorWeightTx (weight=0) to P-Chain
- *  5. complete    — Call completeValidatorRemoval on L1
- *  6. done
+ * Operations: 'register' | 'delegate' | 'removeValidator' | 'removeDelegate'
  */
 
 const INITIAL_STATE = {
   step: 'idle',
-  operation: null, // 'register' | 'remove' | 'weight'
+  operation: null,
   error: null,
-  // Data passed between steps
   l1TxHash: null,
   warpMessage: null,
   signedWarpMessage: null,
@@ -52,7 +45,7 @@ export function useValidatorWizard() {
     walletClientRef.current = null
   }, [])
 
-  // ── Step 0: Connect Core Wallet ──
+  // ── Connect Core Wallet ──
   const connectCore = useCallback(async () => {
     if (!isCoreAvailable()) {
       updateState({ error: 'Core wallet not detected. Please install the Core browser extension from https://core.app' })
@@ -73,30 +66,34 @@ export function useValidatorWizard() {
     }
   }, [updateState])
 
-  // ── Start a wizard operation ──
+  // ── Start operations ──
   const startRegister = useCallback(() => {
     setState({ ...INITIAL_STATE, step: 'form', operation: 'register' })
   }, [])
 
-  const startRemove = useCallback(() => {
-    setState({ ...INITIAL_STATE, step: 'form', operation: 'remove' })
+  const startDelegate = useCallback(() => {
+    setState({ ...INITIAL_STATE, step: 'form', operation: 'delegate' })
   }, [])
 
-  const startWeightUpdate = useCallback(() => {
-    setState({ ...INITIAL_STATE, step: 'form', operation: 'weight' })
+  const startRemoveValidator = useCallback(() => {
+    setState({ ...INITIAL_STATE, step: 'form', operation: 'removeValidator' })
   }, [])
 
-  // ── Step 1b: L1 tx submitted (pending confirmation) ──
+  const startRemoveDelegate = useCallback(() => {
+    setState({ ...INITIAL_STATE, step: 'form', operation: 'removeDelegate' })
+  }, [])
+
+  // ── L1 tx submitted (pending confirmation) ──
   const onL1TxSubmitted = useCallback(() => {
     updateState({ step: 'initiate', error: null })
   }, [updateState])
 
-  // ── Step 2: After L1 tx is confirmed, record the hash ──
+  // ── L1 tx confirmed → begin aggregation ──
   const onL1TxConfirmed = useCallback((txHash) => {
     updateState({ l1TxHash: txHash, step: 'aggregate', error: null })
   }, [updateState])
 
-  // ── Step 3: Aggregate Warp signatures ──
+  // ── Aggregate Warp signatures ──
   const aggregateSignatures = useCallback(async () => {
     const { l1TxHash } = state
     if (!l1TxHash) {
@@ -105,13 +102,8 @@ export function useValidatorWizard() {
     }
     try {
       updateState({ error: null })
-
-      // Extract unsigned Warp message from L1 tx receipt
       const warpData = await getWarpMessageFromTxHash(l1TxHash)
-
-      // Aggregate BLS signatures from L1 validators
       const signedWarpMessage = await aggregateWarpSignatures(warpData.unsignedMessage)
-
       updateState({
         warpMessage: warpData,
         signedWarpMessage,
@@ -122,7 +114,7 @@ export function useValidatorWizard() {
     }
   }, [state, updateState])
 
-  // ── Step 4: Submit P-Chain transaction ──
+  // ── Submit P-Chain transaction ──
   const submitPChainTx = useCallback(async (params = {}) => {
     const { signedWarpMessage, operation } = state
     if (!signedWarpMessage) {
@@ -130,7 +122,6 @@ export function useValidatorWizard() {
       return
     }
 
-    // Ensure Core is connected
     if (!walletClientRef.current) {
       const connected = await connectCore()
       if (!connected) return
@@ -146,38 +137,35 @@ export function useValidatorWizard() {
           initialBalanceAvax: params.initialBalanceAvax || 0.1,
         })
       } else {
-        // remove or weight update both use SetL1ValidatorWeightTx
+        // Delegation, removal operations all use SetL1ValidatorWeightTx
         txHash = await submitSetL1ValidatorWeightTx(walletClientRef.current, {
           signedWarpMessage,
         })
       }
 
-      updateState({
-        pChainTxHash: txHash,
-        step: 'complete',
-      })
+      updateState({ pChainTxHash: txHash, step: 'complete' })
     } catch (err) {
       updateState({ error: `P-Chain transaction failed: ${err.message}` })
     }
   }, [state, updateState, connectCore])
 
-  // ── Step 5: After complete tx on L1 is confirmed ──
+  // ── L1 completion tx confirmed ──
   const onCompleteTxConfirmed = useCallback(() => {
     updateState({ step: 'done' })
   }, [updateState])
 
-  // ── Manual override: user provides P-Chain tx hash directly ──
+  // ── Manual P-Chain tx hash override ──
   const setManualPChainTxHash = useCallback((txHash) => {
     updateState({ pChainTxHash: txHash, step: 'complete' })
   }, [updateState])
 
   return {
     ...state,
-    // Actions
     connectCore,
     startRegister,
-    startRemove,
-    startWeightUpdate,
+    startDelegate,
+    startRemoveValidator,
+    startRemoveDelegate,
     onL1TxSubmitted,
     onL1TxConfirmed,
     aggregateSignatures,
