@@ -22,12 +22,12 @@ const KNOWN_ADDRESSES = {
 }
 
 const KNOWN_SELECTORS = {
-  '0x678d66a9': 'placeOrder',
+  '0x9e9e5253': 'placeOrder',
   '0xa1a870d9': 'executeOrder',
   '0xe68f31e3': 'submitProof',
   '0x514fcac7': 'cancelOrder',
   '0x4ee7de66': 'completeExpiredOrder',
-  '0xdd203e8d': 'quitOrder',
+  '0xd2926b21': 'quitOrder',
   '0x372500ab': 'claimRewards',
   '0xdbbbe766': 'processExpiredSlots',
   '0x53e3c7a1': 'activateSlots',

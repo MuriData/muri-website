@@ -13,7 +13,8 @@ export function useStorageActions() {
       ...market,
       functionName: 'placeOrder',
       args: [
-        { root: BigInt(root), uri },
+        BigInt(root),
+        uri,
         numChunks,
         periods,
         replicas,

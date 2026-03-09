@@ -1698,8 +1698,8 @@ export const FILE_MARKET_ABI = [
       },
       {
         "name": "startPeriod_",
-        "type": "uint64",
-        "internalType": "uint64"
+        "type": "uint32",
+        "internalType": "uint32"
       },
       {
         "name": "expired_",
@@ -1729,6 +1729,25 @@ export const FILE_MARKET_ABI = [
         "name": "",
         "type": "address[]",
         "internalType": "address[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getOrderPrice",
+    "inputs": [
+      {
+        "name": "_orderId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -2430,21 +2449,14 @@ export const FILE_MARKET_ABI = [
         "internalType": "address"
       },
       {
-        "name": "file",
-        "type": "tuple",
-        "internalType": "struct MarketStorage.FileMeta",
-        "components": [
-          {
-            "name": "root",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "uri",
-            "type": "string",
-            "internalType": "string"
-          }
-        ]
+        "name": "filled",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "replicas",
+        "type": "uint8",
+        "internalType": "uint8"
       },
       {
         "name": "numChunks",
@@ -2457,24 +2469,14 @@ export const FILE_MARKET_ABI = [
         "internalType": "uint16"
       },
       {
-        "name": "replicas",
-        "type": "uint8",
-        "internalType": "uint8"
+        "name": "startPeriod",
+        "type": "uint32",
+        "internalType": "uint32"
       },
       {
-        "name": "price",
+        "name": "fileRoot",
         "type": "uint256",
         "internalType": "uint256"
-      },
-      {
-        "name": "filled",
-        "type": "uint8",
-        "internalType": "uint8"
-      },
-      {
-        "name": "startPeriod",
-        "type": "uint64",
-        "internalType": "uint64"
       },
       {
         "name": "escrow",
@@ -2521,21 +2523,14 @@ export const FILE_MARKET_ABI = [
     "name": "placeOrder",
     "inputs": [
       {
-        "name": "_file",
-        "type": "tuple",
-        "internalType": "struct MarketStorage.FileMeta",
-        "components": [
-          {
-            "name": "root",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "uri",
-            "type": "string",
-            "internalType": "string"
-          }
-        ]
+        "name": "_fileRoot",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_fileUri",
+        "type": "string",
+        "internalType": "string"
       },
       {
         "name": "_numChunks",
