@@ -4,17 +4,18 @@ import { computeFileRoot as wasmComputeRoot, generateFSPProof as wasmGenerateFSP
 /**
  * Hook for WASM-powered file root computation and FSP proof generation.
  *
- * Returns:
- *   computeRoot(file)         → sets root + numChunks
- *   generateProof(file, pk, vk) → sets proof[8] + root + numChunks
- *   root, numChunks, proof, isComputing, error, reset
+ * stage: 'hashing' | 'root' | 'proof' | null
+ *   - hashing: parallel leaf hashing across workers (large files only)
+ *   - root: tree assembly / root computation
+ *   - proof: Groth16 proving
  */
 export function useWasm() {
   const [root, setRoot] = useState(null)
   const [numChunks, setNumChunks] = useState(0)
   const [proof, setProof] = useState(null)
   const [isComputing, setIsComputing] = useState(false)
-  const [stage, setStage] = useState(null) // 'root' | 'proof' | null
+  const [stage, setStage] = useState(null)
+  const [hashWorkers, setHashWorkers] = useState(0)
   const [error, setError] = useState(null)
 
   const computeRoot = useCallback(async (file) => {
@@ -37,11 +38,15 @@ export function useWasm() {
 
   const generateProof = useCallback(async (file) => {
     setIsComputing(true)
-    setStage('root')
+    setStage('hashing')
     setError(null)
     try {
       const result = await wasmGenerateFSP(file, (progress) => {
-        if (progress.stage === 'root') {
+        if (progress.stage === 'hashing') {
+          setNumChunks(progress.numChunks || 0)
+          setHashWorkers(progress.workers || 0)
+          setStage('hashing')
+        } else if (progress.stage === 'root') {
           setRoot(progress.root)
           setNumChunks(progress.numChunks)
           setStage('proof')
@@ -57,6 +62,7 @@ export function useWasm() {
     } finally {
       setIsComputing(false)
       setStage(null)
+      setHashWorkers(0)
     }
   }, [])
 
@@ -67,6 +73,7 @@ export function useWasm() {
     setProof(null)
     setIsComputing(false)
     setStage(null)
+    setHashWorkers(0)
     setError(null)
   }, [])
 
@@ -76,6 +83,7 @@ export function useWasm() {
     proof,
     isComputing,
     stage,
+    hashWorkers,
     error,
     computeRoot,
     generateProof,

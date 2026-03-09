@@ -323,26 +323,36 @@ function UploadWizard({ ipfs }) {
           </>
         )}
 
-        {/* WASM computing — two-stage progress */}
+        {/* WASM computing — three-stage progress */}
         {wasm.isComputing && (
           <div className="proof-progress">
-            <div className={`proof-progress__step${wasm.stage === 'root' ? ' proof-progress__step--active' : ' proof-progress__step--done'}`}>
-              {wasm.stage === 'root'
-                ? <span className="tx-status__spinner" />
-                : <span className="proof-progress__check">✓</span>
-              }
-              <span>Computing Merkle Root</span>
-              {wasm.stage !== 'root' && wasm.numChunks > 0 && (
-                <span className="proof-progress__detail">{wasm.numChunks} chunks</span>
-              )}
-            </div>
-            <div className={`proof-progress__step${wasm.stage === 'proof' ? ' proof-progress__step--active' : ''}`}>
-              {wasm.stage === 'proof'
-                ? <span className="tx-status__spinner" />
-                : <span className="proof-progress__dot">2</span>
-              }
-              <span>Generating FSP Proof</span>
-            </div>
+            {(() => {
+              const stages = ['hashing', 'root', 'proof']
+              const labels = [
+                `Hashing chunks${wasm.hashWorkers > 0 ? ` (${wasm.hashWorkers} workers)` : ''}`,
+                'Building Merkle tree',
+                'Generating FSP Proof',
+              ]
+              const idx = stages.indexOf(wasm.stage)
+              return stages.map((s, i) => {
+                const isDone = i < idx
+                const isActive = i === idx
+                return (
+                  <div key={s} className={`proof-progress__step${isActive ? ' proof-progress__step--active' : isDone ? ' proof-progress__step--done' : ''}`}>
+                    {isActive
+                      ? <span className="tx-status__spinner" />
+                      : isDone
+                        ? <span className="proof-progress__check">✓</span>
+                        : <span className="proof-progress__dot">{i + 1}</span>
+                    }
+                    <span>{labels[i]}</span>
+                    {isDone && s === 'hashing' && wasm.numChunks > 0 && (
+                      <span className="proof-progress__detail">{wasm.numChunks} chunks</span>
+                    )}
+                  </div>
+                )
+              })
+            })()}
           </div>
         )}
 

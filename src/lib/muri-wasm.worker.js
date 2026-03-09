@@ -1,4 +1,5 @@
-/* Web Worker for muri WASM operations — keeps main thread responsive. */
+/* Web Worker for muri WASM operations — keeps main thread responsive.
+ * Handles both single-threaded (small files) and pre-hashed (parallel) paths. */
 
 let loaded = false
 let loadPromise = null
@@ -38,28 +39,56 @@ async function loadFSPKeys() {
   return fspKeysCache
 }
 
+function makeProgressCallback(id) {
+  return (data) => {
+    const progress = { stage: data.stage }
+    if (data.root !== undefined) progress.root = data.root
+    if (data.numChunks !== undefined) progress.numChunks = data.numChunks
+    self.postMessage({ id, progress })
+  }
+}
+
 self.onmessage = async (e) => {
-  const { id, type, file } = e.data
+  const { id, type } = e.data
   try {
     await ensureLoaded()
-    const fileBytes = new Uint8Array(await file.arrayBuffer())
 
     if (type === 'computeRoot') {
+      const fileBytes = new Uint8Array(await e.data.file.arrayBuffer())
       const result = await self.muriComputeFileRoot(fileBytes)
       self.postMessage({ id, result })
+
     } else if (type === 'generateProof') {
+      // Single-worker path (small files)
+      const fileBytes = new Uint8Array(await e.data.file.arrayBuffer())
       const [pk, vk] = await loadFSPKeys()
-      const onProgress = (data) => {
-        const progress = { stage: data.stage }
-        if (data.root !== undefined) progress.root = data.root
-        if (data.numChunks !== undefined) progress.numChunks = data.numChunks
-        self.postMessage({ id, progress })
-      }
       const result = await self.muriGenerateFSPProof(
         fileBytes,
         new Uint8Array(pk),
         new Uint8Array(vk),
-        onProgress,
+        makeProgressCallback(id),
+      )
+      self.postMessage({ id, result })
+
+    } else if (type === 'computeRootFromHashes') {
+      // Parallel path — leaf hashes already computed by hash workers
+      const { leafHashes, numLeaves } = e.data
+      const result = await self.muriComputeRootFromHashes(
+        new Uint8Array(leafHashes),
+        numLeaves,
+      )
+      self.postMessage({ id, result })
+
+    } else if (type === 'generateProofFromHashes') {
+      // Parallel path — leaf hashes already computed by hash workers
+      const { leafHashes, numLeaves } = e.data
+      const [pk, vk] = await loadFSPKeys()
+      const result = await self.muriGenerateFSPProofFromHashes(
+        new Uint8Array(leafHashes),
+        numLeaves,
+        new Uint8Array(pk),
+        new Uint8Array(vk),
+        makeProgressCallback(id),
       )
       self.postMessage({ id, result })
     }
