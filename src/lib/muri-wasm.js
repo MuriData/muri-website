@@ -1,93 +1,73 @@
 /**
- * Loader for the muri.wasm Go module.
+ * WASM operations via Web Worker — prevents main-thread blocking for large files.
  *
- * Exposes:
+ * Same API as before:
  *   computeFileRoot(file: File) → Promise<{ root: string, numChunks: number }>
- *   generateFSPProof(file: File, proverKey: ArrayBuffer, verifierKey: ArrayBuffer)
- *       → Promise<{ proof: string[], root: string, numChunks: number }>
- *
- * The WASM module is loaded lazily on first call and stays resident.
+ *   generateFSPProof(file: File) → Promise<{ proof: string[], root: string, numChunks: number }>
+ *   terminate() — kill running computation (e.g. on user cancel)
  */
 
-let loaded = false
-let loadPromise = null
+let worker = null
+let nextId = 0
+const pending = new Map()
 
-async function ensureLoaded() {
-  if (loaded) return
-  if (loadPromise) return loadPromise
-
-  loadPromise = (async () => {
-    // Load wasm_exec.js (Go's WASM support runtime)
-    if (!globalThis.Go) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = '/wasm_exec.js'
-        script.onload = resolve
-        script.onerror = () => reject(new Error('Failed to load wasm_exec.js'))
-        document.head.appendChild(script)
-      })
+function getWorker() {
+  if (!worker) {
+    worker = new Worker(new URL('./muri-wasm.worker.js', import.meta.url))
+    worker.onmessage = (e) => {
+      const { id, result, error } = e.data
+      const p = pending.get(id)
+      if (!p) return
+      pending.delete(id)
+      if (error) p.reject(new Error(error))
+      else p.resolve(result)
     }
+    worker.onerror = (e) => {
+      for (const [, p] of pending) {
+        p.reject(new Error(e.message || 'Worker error'))
+      }
+      pending.clear()
+    }
+  }
+  return worker
+}
 
-    const go = new globalThis.Go()
-    const result = await WebAssembly.instantiateStreaming(
-      fetch('/muri.wasm'),
-      go.importObject,
-    )
-
-    // Run the Go main() — it sets global functions and blocks forever.
-    go.run(result.instance)
-    loaded = true
-  })()
-
-  return loadPromise
+function callWorker(type, file) {
+  return new Promise((resolve, reject) => {
+    const id = nextId++
+    pending.set(id, { resolve, reject })
+    getWorker().postMessage({ id, type, file })
+  })
 }
 
 /**
  * Compute the Poseidon2 Sparse Merkle Tree root from raw file bytes.
- * Uses the exact same algorithm as muri-zkproof (same hash params, same tree depth).
- *
  * @param {File} file
  * @returns {Promise<{ root: string, numChunks: number }>}
  */
-export async function computeFileRoot(file) {
-  await ensureLoaded()
-  const bytes = new Uint8Array(await file.arrayBuffer())
-  return globalThis.muriComputeFileRoot(bytes)
-}
-
-/**
- * Fetch the bundled FSP prover and verifier keys from /public.
- * Cached after first fetch.
- */
-let fspKeysPromise = null
-
-async function loadFSPKeys() {
-  if (fspKeysPromise) return fspKeysPromise
-  fspKeysPromise = Promise.all([
-    fetch('/fsp_prover.key').then((r) => {
-      if (!r.ok) throw new Error('Failed to fetch fsp_prover.key')
-      return r.arrayBuffer()
-    }),
-    fetch('/fsp_verifier.key').then((r) => {
-      if (!r.ok) throw new Error('Failed to fetch fsp_verifier.key')
-      return r.arrayBuffer()
-    }),
-  ])
-  return fspKeysPromise
+export function computeFileRoot(file) {
+  return callWorker('computeRoot', file)
 }
 
 /**
  * Generate an FSP (File Size Proof) Groth16 proof.
- * Automatically fetches the bundled prover + verifier keys.
- *
  * @param {File} file
  * @returns {Promise<{ proof: string[], root: string, numChunks: number }>}
  */
-export async function generateFSPProof(file) {
-  await ensureLoaded()
-  const [proverKey, verifierKey] = await loadFSPKeys()
-  const fileBytes = new Uint8Array(await file.arrayBuffer())
-  const pkBytes = new Uint8Array(proverKey)
-  const vkBytes = new Uint8Array(verifierKey)
-  return globalThis.muriGenerateFSPProof(fileBytes, pkBytes, vkBytes)
+export function generateFSPProof(file) {
+  return callWorker('generateProof', file)
+}
+
+/**
+ * Terminate the worker, cancelling any in-flight computation.
+ */
+export function terminate() {
+  if (worker) {
+    worker.terminate()
+    worker = null
+    for (const [, p] of pending) {
+      p.reject(new Error('Cancelled'))
+    }
+    pending.clear()
+  }
 }

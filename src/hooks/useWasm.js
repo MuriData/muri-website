@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { computeFileRoot as wasmComputeRoot, generateFSPProof as wasmGenerateFSP } from '../lib/muri-wasm'
+import { computeFileRoot as wasmComputeRoot, generateFSPProof as wasmGenerateFSP, terminate as wasmTerminate } from '../lib/muri-wasm'
 
 /**
  * Hook for WASM-powered file root computation and FSP proof generation.
@@ -55,6 +55,7 @@ export function useWasm() {
   }, [])
 
   const reset = useCallback(() => {
+    wasmTerminate()
     setRoot(null)
     setNumChunks(0)
     setProof(null)
