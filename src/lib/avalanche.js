@@ -5,7 +5,7 @@ const RPC_BASE = 'https://testnet-rpc.muri.moe'
 const PLATFORM_URL = `${RPC_BASE}/ext/bc/P`
 
 // The blockchain ID from our RPC path
-const BLOCKCHAIN_ID = '2qyiuZtqxCmwRosTYFBsoyTSsupLwsvvFPh9K2inL82Sd8m8Yf'
+const BLOCKCHAIN_ID = 'inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu'
 
 async function platformCall(method, params = {}) {
   const res = await fetch(PLATFORM_URL, {

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPublicClient, http, formatEther, formatGwei } from 'viem'
 import { getSubnetValidators } from '../lib/avalanche'
 
-const RPC_URL = 'https://testnet-rpc.muri.moe/ext/bc/2qyiuZtqxCmwRosTYFBsoyTSsupLwsvvFPh9K2inL82Sd8m8Yf/rpc'
+const RPC_URL = 'https://testnet-rpc.muri.moe/ext/bc/inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu/rpc'
 
 const client = createPublicClient({
   transport: http(RPC_URL),

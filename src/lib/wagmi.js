@@ -3,11 +3,11 @@ import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { QueryClient } from '@tanstack/react-query'
 
 export const muriTestnet = {
-  id: 44946,
+  id: 97981,
   name: 'MuriData Testnet',
   nativeCurrency: { name: 'MuriCoin', symbol: 'MURI', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://testnet-rpc.muri.moe/ext/bc/2qyiuZtqxCmwRosTYFBsoyTSsupLwsvvFPh9K2inL82Sd8m8Yf/rpc'] },
+    default: { http: ['https://testnet-rpc.muri.moe/ext/bc/inP2vNhcVSABGmq39UHwuB9tDxUUWp3g6gpRwdE6TqtAtAWmu/rpc'] },
   },
   blockExplorers: {
     default: { name: 'MuriData Testnet Explorer', url: 'https://testnet-explorer.muri.moe' },

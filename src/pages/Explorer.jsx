@@ -111,7 +111,7 @@ function Explorer() {
         <div>
           <h1 className="explorer-title">Block Explorer</h1>
           <p className="explorer-subtitle">
-            MuriData Testnet — chain 44946
+            MuriData Testnet Alpha
             <a href={BLOCKSCOUT} target="_blank" rel="noopener noreferrer" className="explorer-blockscout-link">
               View on Blockscout ↗
             </a>
