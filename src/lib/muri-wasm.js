@@ -14,8 +14,8 @@
  */
 
 const CHUNK_SIZE = 16384 // 16 KB — must match Go's fsp.FileSize
-const PARALLEL_THRESHOLD = 1000 // chunks — below this, single-worker is fine
-const MAX_HASH_WORKERS = 4
+const PARALLEL_THRESHOLD = 500 // chunks — below this, single-worker is fine
+const MAX_HASH_WORKERS = 8
 
 let proofWorker = null
 let nextId = 0
