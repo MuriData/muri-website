@@ -65,6 +65,7 @@ export function useFileUpload(ipfsUpload) {
     state,       // idle | selected | uploading | uploaded
     file,
     cid,
+    setCid,
     numChunks,
     error,
     selectFile,

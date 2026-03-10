@@ -41,6 +41,16 @@ function IconLink() {
   )
 }
 
+// Basic CID format validation: CIDv0 (Qm, 46 base58 chars) or CIDv1 (bafy/bafk prefix, base32)
+// Also allows CID + path like "QmHash/path/to/file"
+function isValidCid(s) {
+  if (!s) return false
+  const root = s.split('/')[0]
+  if (/^Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(root)) return true
+  if (/^b[a-z2-7]{58,}$/i.test(root)) return true
+  return false
+}
+
 const STEPS_UPLOAD = ['Select File', 'Upload to IPFS', 'Generate Proof', 'Configure', 'Submit']
 const STEPS_IMPORT = ['Enter CID', 'Fetch from IPFS', 'Generate Proof', 'Configure', 'Submit']
 
@@ -71,7 +81,7 @@ function UploadWizard({ ipfs }) {
   const [dragOver, setDragOver] = useState(false)
   const [inputMode, setInputMode] = useState('upload') // 'upload' | 'import'
   const [uriInput, setUriInput] = useState('')
-  const { state: uploadState, file, cid, numChunks, error: uploadError, selectFile, uploadToIpfs, importFromCid, reset: resetUpload } = useFileUpload(ipfs.upload)
+  const { state: uploadState, file, cid, setCid, numChunks, error: uploadError, selectFile, uploadToIpfs, importFromCid, reset: resetUpload } = useFileUpload(ipfs.upload)
 
   // Consume navigation state (file from drag or openPicker flag from click)
   const location = useLocation()
@@ -300,12 +310,24 @@ function UploadWizard({ ipfs }) {
           <div className="tx-status tx-status--error">{uploadError}</div>
         )}
 
-        {/* CID display */}
-        {cid && (
-          <div className="cid-display">
-            <span className="cid-display__label">CID</span>
-            {cid}
-          </div>
+        {/* CID display — editable */}
+        {cid != null && (
+          <>
+            <div className={`cid-display${!isValidCid(cid) ? ' cid-display--invalid' : ''}`}>
+              <span className="cid-display__label">CID</span>
+              <input
+                className="cid-display__input"
+                type="text"
+                value={cid}
+                onChange={(e) => setCid(e.target.value)}
+              />
+            </div>
+            {!isValidCid(cid) && (
+              <div className="tx-status tx-status--error" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>
+                Invalid CID format — expected CIDv0 (Qm...) or CIDv1 (bafy...)
+              </div>
+            )}
+          </>
         )}
 
         {/* Step 2: Compute Merkle root + FSP proof via WASM */}
@@ -438,7 +460,7 @@ function UploadWizard({ ipfs }) {
               </div>
             </div>
 
-            <button className="console-btn console-btn--primary" onClick={handleSubmit}>
+            <button className="console-btn console-btn--primary" onClick={handleSubmit} disabled={!isValidCid(cid)}>
               Place Order — {formatMuri(escrow)} MURI
             </button>
           </>

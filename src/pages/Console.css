@@ -418,6 +418,37 @@
   flex-shrink: 0;
 }
 
+.cid-display__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  padding: 2px 4px;
+  outline: none;
+  word-break: break-all;
+}
+
+.cid-display__input:hover {
+  border-color: var(--color-glow-teal-30, rgba(41, 215, 220, 0.3));
+}
+
+.cid-display__input:focus {
+  border-color: var(--color-bg-teal);
+  background: var(--color-bg-surface, #fff);
+}
+
+.cid-display--invalid {
+  background: rgba(220, 53, 69, 0.08);
+}
+
+.cid-display--invalid .cid-display__input:focus {
+  border-color: #dc3545;
+}
+
 /* Form fields */
 .form-group {
   display: flex;
