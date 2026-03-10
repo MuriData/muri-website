@@ -1,4 +1,10 @@
-# React + Vite
+# muri-website
+
+The frontend interface for MuriData. It provides clients and nodes an accessible dashboard to interact with the MURI (Measurable Unique Replica Integrity) storage protocol, place Standard and Archive orders, monitor node challenge statuses, and trace the two-phase commit-reveal MURI lifecycle.
+
+---
+
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
