@@ -61,7 +61,7 @@ function StepIndicator({ steps, currentStep }) {
 }
 
 // ── Shared Warp/P-Chain/Complete Steps ──
-function WarpSteps({ wizard, completeFunc, completeFuncName, completeArgs, completePending, completeConfirming, completeError, completeSuccess, formExtra }) {
+function WarpSteps({ wizard, completeFunc, completeFuncName, completeArgs, completePending, completeConfirming, completeError, completeSuccess, formExtra, pChainParams }) {
   // When L1 complete tx confirms, advance wizard
   if (completeSuccess && wizard.step === 'complete') {
     wizard.onCompleteTxConfirmed()
@@ -92,7 +92,7 @@ function WarpSteps({ wizard, completeFunc, completeFuncName, completeArgs, compl
           {formExtra}
           <button
             className="vm-action-submit"
-            onClick={() => wizard.submitPChainTx({ initialBalanceAvax: 0.1 })}
+            onClick={() => wizard.submitPChainTx(pChainParams || { initialBalanceAvax: 0.1 })}
           >
             Sign & Submit to P-Chain
           </button>
@@ -143,6 +143,7 @@ function StakeWizard({ wizard, settings }) {
   const [formData, setFormData] = useState({
     nodeID: '',
     blsPublicKey: '',
+    blsProofOfPossession: '',
     stakeAmount: '',
     delegationFee: '2',
     minStakeDuration: '14',
@@ -171,7 +172,7 @@ function StakeWizard({ wizard, settings }) {
   const minFeeBips = settings?.minimumDelegationFeeBips ?? 0
   const feeValid = delegationFeeBips >= minFeeBips && delegationFeeBips <= 10000
 
-  const canSubmit = formData.nodeID && formData.blsPublicKey && stakeValid && feeValid && !initPending && !initConfirming
+  const canSubmit = formData.nodeID && formData.blsPublicKey && formData.blsProofOfPossession && stakeValid && feeValid && !initPending && !initConfirming
 
   return (
     <div className="vm-wizard">
@@ -194,6 +195,9 @@ function StakeWizard({ wizard, settings }) {
 
             <label className="vm-form-label">BLS Public Key <span>(48 bytes, 0x prefix)</span></label>
             <input placeholder="0x..." value={formData.blsPublicKey} onChange={(e) => setFormData({ ...formData, blsPublicKey: e.target.value })} />
+
+            <label className="vm-form-label">BLS Proof of Possession <span>(96 bytes, 0x prefix)</span></label>
+            <input placeholder="0x..." value={formData.blsProofOfPossession} onChange={(e) => setFormData({ ...formData, blsProofOfPossession: e.target.value })} />
 
             <label className="vm-form-label">
               Stake Amount (MURI)
@@ -274,6 +278,10 @@ function StakeWizard({ wizard, settings }) {
         completeError={completeError}
         completeSuccess={completeSuccess}
         formExtra={<p className="vm-wizard__detail">Initial Balance: {formData.initialBalance} AVAX</p>}
+        pChainParams={{
+          initialBalanceAvax: Number(formData.initialBalance) || 0.1,
+          blsSignature: formData.blsProofOfPossession,
+        }}
       />
     </div>
   )

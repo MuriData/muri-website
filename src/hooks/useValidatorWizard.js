@@ -135,6 +135,7 @@ export function useValidatorWizard() {
         txHash = await submitRegisterL1ValidatorTx(walletClientRef.current, {
           signedWarpMessage,
           initialBalanceAvax: params.initialBalanceAvax || 0.1,
+          blsSignature: params.blsSignature,
         })
       } else {
         // Delegation, removal operations all use SetL1ValidatorWeightTx
