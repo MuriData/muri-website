@@ -1,6 +1,6 @@
 # muri-website
 
-The frontend interface for MuriData. It provides clients and nodes an accessible dashboard to interact with the MURI (Measurable Unique Replica Integrity) storage protocol, place Standard and Archive orders, monitor node challenge statuses, and trace the two-phase commit-reveal MURI lifecycle.
+The frontend interface for MuriData. It provides clients and nodes an accessible dashboard to interact with the muridata network, blockchain and contracts.
 
 ---
 
