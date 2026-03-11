@@ -6,7 +6,7 @@ import { ipfsGatewayUrl } from '../../lib/config'
 
 function IconList() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 5h14M3 10h14M3 15h14" />
     </svg>
   )
@@ -14,7 +14,7 @@ function IconList() {
 
 function IconWallet() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="4" width="16" height="13" rx="2" />
       <path d="M2 8h16" />
       <circle cx="14" cy="12" r="1.5" fill="currentColor" />

@@ -8,7 +8,7 @@ import { FAUCET_URL } from '../lib/config'
 
 function IconUpload() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 14v2a2 2 0 002 2h10a2 2 0 002-2v-2" />
       <path d="M10 12V3" /><path d="M6 7l4-4 4 4" />
     </svg>

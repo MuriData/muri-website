@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNodePanel } from '../../hooks/useNodePanel'
 import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
 import { useClaimRewards, useClaimReporterRewards, useUnstakeNode } from '../../hooks/useNodeActions'
@@ -9,7 +10,7 @@ import '../../pages/Console.css'
 
 function IconUser() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="10" cy="7" r="4" /><path d="M3 18 C3 14 7 12 10 12 C13 12 17 14 17 18" />
     </svg>
   )
@@ -33,6 +34,7 @@ function NodePanel() {
   const claimRewards = useClaimRewards()
   const claimReporter = useClaimReporterRewards()
   const unstakeNode = useUnstakeNode()
+  const [confirmUnstake, setConfirmUnstake] = useState(false)
 
   if (!isConnected) {
     return (
@@ -160,15 +162,36 @@ function NodePanel() {
         {/* Capacity management */}
         <CapacityForm nodeInfo={nodeInfo} />
 
-        {/* Unstake */}
-        {canUnstake && (
+        {/* Unstake — with confirmation dialog */}
+        {canUnstake && !confirmUnstake && (
           <button
             className="console-btn console-btn--danger console-btn--small"
-            onClick={unstakeNode.unstake}
-            disabled={unstakeNode.isPending || unstakeNode.isConfirming}
+            onClick={() => setConfirmUnstake(true)}
           >
-            {unstakeNode.isPending || unstakeNode.isConfirming ? 'Unstaking...' : 'Unstake Node'}
+            Unstake Node
           </button>
+        )}
+        {canUnstake && confirmUnstake && !unstakeNode.isSuccess && (
+          <div className="confirm-dialog">
+            <p className="confirm-dialog__text">
+              Are you sure you want to unstake? Your node will be removed from the network and your stake will be returned.
+            </p>
+            <div className="confirm-dialog__actions">
+              <button
+                className="console-btn console-btn--danger console-btn--small"
+                onClick={() => { unstakeNode.unstake(); setConfirmUnstake(false) }}
+                disabled={unstakeNode.isPending || unstakeNode.isConfirming}
+              >
+                {unstakeNode.isPending || unstakeNode.isConfirming ? 'Unstaking...' : 'Confirm Unstake'}
+              </button>
+              <button
+                className="console-btn console-btn--secondary console-btn--small"
+                onClick={() => setConfirmUnstake(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         )}
         {unstakeNode.isSuccess && (
           <div className="tx-status tx-status--success" style={{ fontSize: '0.7rem', padding: '4px 8px' }}>Unstaked</div>

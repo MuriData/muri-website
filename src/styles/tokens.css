@@ -9,9 +9,20 @@
   --color-bg-teal-hover: #1cc8cd;
   --color-bg-deep: #0a2f30;
   --color-text-primary: #0d3b3c;
-  --color-text-secondary: #4a7a7b;
+  --color-text-secondary: #3a6364;
   --color-text-inverse: #ffffff;
   --color-text-on-teal: #ffffff;
+
+  /* Semantic status colors */
+  --color-error: #e87c6c;
+  --color-error-dark: #c0392b;
+  --color-error-bg: #fef5f3;
+  --color-error-border: #e87c6c;
+  --color-warning: #b8860b;
+  --color-warning-bg: #fff8e6;
+  --color-warning-border: #f0d68a;
+  --color-success: var(--color-bg-teal);
+  --color-success-bg: rgba(41, 215, 220, 0.15);
 
   /* Overlays & glows */
   --color-overlay-white-60: rgba(255, 255, 255, 0.6);

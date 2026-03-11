@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFileUpload } from '../../hooks/useFileUpload'
 import { useStorageActions } from '../../hooks/useStorageActions'
@@ -9,7 +9,7 @@ import { ipfsGatewayUrl } from '../../lib/config'
 
 function IconFile() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" />
       <path d="M12 2v4h4" />
     </svg>
@@ -18,7 +18,7 @@ function IconFile() {
 
 function IconUploadCloud() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M10 28a8 8 0 01-1-15.9A10 10 0 0130 16a8 8 0 01-2 12" />
       <path d="M20 22v-10" /><path d="M16 16l4-4 4 4" />
     </svg>
@@ -34,7 +34,7 @@ function formatBytes(bytes) {
 
 function IconLink() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M17 23l-3 3a5 5 0 01-7-7l3-3" />
       <path d="M23 17l3-3a5 5 0 017 7l-3 3" />
       <path d="M16 24l8-8" />
@@ -50,6 +50,39 @@ function isValidCid(s) {
   if (/^Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(root)) return true
   if (/^b[a-z2-7]{58,}$/i.test(root)) return true
   return false
+}
+
+// MURI ↔ Wei conversion (18 decimals)
+const MURI_DECIMALS = 10n ** 18n
+
+function muriToWei(muriStr) {
+  if (!muriStr || muriStr === '') return '0'
+  const parts = muriStr.split('.')
+  const whole = parts[0] || '0'
+  const frac = (parts[1] || '').padEnd(18, '0').slice(0, 18)
+  return (BigInt(whole) * MURI_DECIMALS + BigInt(frac)).toString()
+}
+
+// Elapsed time hook for proof generation progress
+function useElapsedTime(isRunning) {
+  const startRef = useRef(0)
+  const [elapsed, setElapsed] = useState(0)
+
+  useEffect(() => {
+    if (!isRunning) return
+    startRef.current = Date.now()
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000))
+    }, 1000)
+    return () => { clearInterval(interval); setElapsed(0) }
+  }, [isRunning])
+
+  return isRunning ? elapsed : 0
+}
+
+function formatElapsed(seconds) {
+  if (seconds < 60) return `${seconds}s`
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`
 }
 
 const STEPS_UPLOAD = ['Select File', 'Upload to IPFS', 'Generate Proof', 'Configure', 'Submit']
@@ -101,11 +134,13 @@ function UploadWizard({ ipfs }) {
 
   // WASM-powered file root + FSP proof
   const wasm = useWasm()
+  const proofElapsed = useElapsedTime(wasm.isComputing)
 
   // Order config
   const [periodsInput, setPeriodsInput] = useState('4')
   const [replicasInput, setReplicasInput] = useState('3')
-  const [priceWei, setPriceWei] = useState('100000000000000')
+  const [priceMuri, setPriceMuri] = useState('0.0001')
+  const priceWei = muriToWei(priceMuri)
 
   const periods = Number(periodsInput) || 0
   const replicas = Number(replicasInput) || 0
@@ -186,6 +221,7 @@ function UploadWizard({ ipfs }) {
     wasm.reset()
     setPeriodsInput('4')
     setReplicasInput('3')
+    setPriceMuri('0.0001')
     setUriInput('')
   }
 
@@ -217,15 +253,28 @@ function UploadWizard({ ipfs }) {
               </button>
             </div>
 
+            {!ipfs.isConnected && (
+              <div className="ipfs-required-banner">
+                <span className="ipfs-required-banner__icon" aria-hidden="true">&#9888;</span>
+                Connect to IPFS above before uploading. Files need an IPFS connection to be stored on the network.
+              </div>
+            )}
+
             {inputMode === 'upload' && (
               <div
-                className={`drop-zone${dragOver ? ' drop-zone--dragover' : ''}`}
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                className={`drop-zone${dragOver ? ' drop-zone--dragover' : ''}${!ipfs.isConnected ? ' drop-zone--disabled' : ''}`}
+                onDragOver={(e) => { e.preventDefault(); if (ipfs.isConnected) setDragOver(true) }}
                 onDragLeave={() => setDragOver(false)}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
+                onDrop={(e) => { if (ipfs.isConnected) handleDrop(e); else e.preventDefault() }}
+                onClick={() => ipfs.isConnected && fileInputRef.current?.click()}
+                role="button"
+                tabIndex={ipfs.isConnected ? 0 : -1}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ipfs.isConnected && fileInputRef.current?.click() } }}
+                aria-label="Select file for upload"
+                aria-disabled={!ipfs.isConnected}
+                style={!ipfs.isConnected ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
               >
-                <div className="drop-zone__icon"><IconUploadCloud /></div>
+                <div className="drop-zone__icon" aria-hidden="true"><IconUploadCloud /></div>
                 <p className="drop-zone__text">
                   Drag and drop a file, or <strong>browse</strong>
                 </p>
@@ -237,13 +286,15 @@ function UploadWizard({ ipfs }) {
                   type="file"
                   onChange={handleFileSelect}
                   style={{ display: 'none' }}
+                  aria-hidden="true"
+                  tabIndex={-1}
                 />
               </div>
             )}
 
             {inputMode === 'import' && (
-              <div className="drop-zone">
-                <div className="drop-zone__icon"><IconLink /></div>
+              <div className="drop-zone" style={!ipfs.isConnected ? { opacity: 0.5 } : undefined}>
+                <div className="drop-zone__icon" aria-hidden="true"><IconLink /></div>
                 <p className="drop-zone__text">
                   Enter an IPFS CID or URI to fetch and place a storage order
                 </p>
@@ -256,6 +307,8 @@ function UploadWizard({ ipfs }) {
                     onKeyDown={(e) => e.key === 'Enter' && handleImport()}
                     placeholder="ipfs://Qm... or bare CID"
                     style={{ flex: 1 }}
+                    disabled={!ipfs.isConnected}
+                    aria-label="IPFS CID or URI"
                   />
                   <button
                     className="console-btn console-btn--primary"
@@ -265,9 +318,6 @@ function UploadWizard({ ipfs }) {
                     Fetch
                   </button>
                 </div>
-                {!ipfs.isConnected && (
-                  <p className="form-hint">Connect to IPFS first using the bar above</p>
-                )}
               </div>
             )}
           </>
@@ -334,27 +384,35 @@ function UploadWizard({ ipfs }) {
         {/* Step 2: Compute Merkle root + FSP proof via WASM */}
         {uploadState === 'uploaded' && !wasm.proof && !wasm.isComputing && (
           <>
-            <span className="form-hint" style={{ margin: 0 }}>
-              Need some time to compute file root (unique identification) and file size proof (FSP).
-            </span>
+            <div className="compute-explanation">
+              <span className="compute-explanation__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="8" r="6" /><path d="M8 5v3" /><circle cx="8" cy="11" r="0.5" fill="currentColor" />
+                </svg>
+              </span>
+              <span>
+                Your file will be hashed into a Merkle tree to generate a unique root and a cryptographic file-size proof.
+                This verifies file integrity on-chain without revealing your data. May take 30-60 seconds for larger files.
+              </span>
+            </div>
             <button
               className="console-btn console-btn--primary"
               onClick={handleComputeRoot}
             >
-              Compute
+              Generate Proof
             </button>
           </>
         )}
 
-        {/* WASM computing — three-stage progress */}
+        {/* WASM computing — three-stage progress with elapsed time */}
         {wasm.isComputing && (
-          <div className="proof-progress">
+          <div className="proof-progress" role="status" aria-live="polite">
             {(() => {
               const stages = ['hashing', 'root', 'proof']
               const labels = [
                 `Hashing chunks${wasm.hashWorkers > 0 ? ` (${wasm.hashWorkers} workers)` : ''}`,
                 'Building Merkle tree',
-                'Generating FSP Proof',
+                'Generating file-size proof',
               ]
               const idx = stages.indexOf(wasm.stage)
               return stages.map((s, i) => {
@@ -365,12 +423,15 @@ function UploadWizard({ ipfs }) {
                     {isActive
                       ? <span className="tx-status__spinner" />
                       : isDone
-                        ? <span className="proof-progress__check">✓</span>
+                        ? <span className="proof-progress__check" aria-hidden="true">✓</span>
                         : <span className="proof-progress__dot">{i + 1}</span>
                     }
                     <span>{labels[i]}</span>
                     {isDone && s === 'hashing' && wasm.numChunks > 0 && (
                       <span className="proof-progress__detail">{wasm.numChunks} chunks</span>
+                    )}
+                    {isActive && proofElapsed > 0 && (
+                      <span className="proof-progress__elapsed">{formatElapsed(proofElapsed)}</span>
                     )}
                   </div>
                 )
@@ -427,13 +488,18 @@ function UploadWizard({ ipfs }) {
               </div>
               <div className="form-group">
                 <label className="form-label">Price / Chunk / Period</label>
-                <input
-                  className="form-input form-input--mono"
-                  type="text"
-                  value={priceWei}
-                  onChange={(e) => setPriceWei(e.target.value)}
-                />
-                <span className="form-hint">{formatMuri(BigInt(priceWei || '0'))} MURI</span>
+                <div className="price-input-group">
+                  <input
+                    className="price-input-group__input"
+                    type="text"
+                    value={priceMuri}
+                    onChange={(e) => setPriceMuri(e.target.value)}
+                    placeholder="0.0001"
+                    aria-label="Price per chunk per period in MURI"
+                  />
+                  <span className="price-input-group__unit price-input-group__unit--active">MURI</span>
+                </div>
+                <span className="form-hint">{formatMuri(BigInt(priceWei || '0'))} MURI per chunk per period</span>
               </div>
             </div>
 
@@ -535,9 +601,14 @@ function UploadWizard({ ipfs }) {
               </div>
             )}
 
-            <button className="console-btn console-btn--secondary" onClick={handleReset}>
-              Upload Another File
-            </button>
+            <div className="success-actions">
+              <Link to="/dashboard" className="console-btn console-btn--primary">
+                View on Dashboard
+              </Link>
+              <button className="console-btn console-btn--secondary" onClick={handleReset}>
+                Upload Another File
+              </button>
+            </div>
           </>
         )}
 

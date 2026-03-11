@@ -13,7 +13,7 @@ import NodeListTable from './dashboard/NodeListTable'
 // ── Icon components ──
 function IconChart() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="10" width="3" height="8" rx="1" /><rect x="8.5" y="6" width="3" height="12" rx="1" /><rect x="15" y="2" width="3" height="16" rx="1" />
     </svg>
   )
@@ -21,7 +21,7 @@ function IconChart() {
 
 function IconShield() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M10 2 L17 5 V10 C17 14.4 13.5 17.5 10 18.5 C6.5 17.5 3 14.4 3 10 V5 Z" />
       <path d="M7 10 L9 12 L13 8" />
     </svg>
@@ -30,7 +30,7 @@ function IconShield() {
 
 function IconSlash() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="10" cy="10" r="7" /><path d="M5 15 L15 5" />
     </svg>
   )
@@ -38,7 +38,7 @@ function IconSlash() {
 
 function IconGrid() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="2" width="7" height="7" rx="1.5" /><rect x="11" y="2" width="7" height="7" rx="1.5" /><rect x="2" y="11" width="7" height="7" rx="1.5" /><rect x="11" y="11" width="7" height="7" rx="1.5" />
     </svg>
   )
@@ -46,7 +46,7 @@ function IconGrid() {
 
 function IconList() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 5h14M3 10h14M3 15h14" />
     </svg>
   )
@@ -169,7 +169,10 @@ function OrderBrowser({ navigate }) {
                   <tr
                     key={id.toString()}
                     className="orders-table__row--clickable"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => navigate(`/dashboard/order/${id.toString()}`)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/dashboard/order/${id.toString()}`) } }}
                   >
                     <td>
                       <Link to={`/dashboard/order/${id.toString()}`} className="explorer-link">
@@ -387,7 +390,10 @@ function Dashboard() {
                     <tr
                       key={id.toString()}
                       className="orders-table__row--clickable"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => navigate(`/dashboard/order/${id.toString()}`)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/dashboard/order/${id.toString()}`) } }}
                     >
                       <td>
                         <Link to={`/dashboard/order/${id.toString()}`} className="explorer-link">

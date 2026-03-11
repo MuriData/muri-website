@@ -113,10 +113,15 @@ function NodeStakeForm() {
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
             placeholder="0x1a2b3c..."
+            aria-describedby="pk-warning"
           />
-          <span className={`form-hint${pkError ? ' form-hint--error' : ''}`}>
-            {pkError || 'Generate with murid keygen (do not generate in browser).'}
-          </span>
+          {pkError && (
+            <span className="form-hint form-hint--error">{pkError}</span>
+          )}
+          <div className="form-warning" id="pk-warning">
+            <span className="form-warning__icon" aria-hidden="true">&#9888;</span>
+            <span>Generate this key with <code>murid keygen</code> on your server. Never generate ZK keys in the browser — they must match your node daemon&apos;s identity.</span>
+          </div>
         </div>
         <div className="cost-breakdown">
           <div className="cost-row">

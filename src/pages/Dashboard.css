@@ -208,8 +208,8 @@
 }
 
 .slot-card--expired {
-  border-color: #e87c6c;
-  background: #fef5f3;
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
 }
 
 .slot-card--active {
@@ -248,8 +248,8 @@
 }
 
 .slot-badge--expired {
-  background: #e87c6c;
-  color: white;
+  background: var(--color-error);
+  color: var(--color-text-inverse);
 }
 
 .slot-card__detail {
