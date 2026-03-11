@@ -896,6 +896,120 @@
   transition: width 0.5s ease;
 }
 
+/* ── Order card URI row ── */
+.order-card__uri-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.order-card__uri-value {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: var(--color-text-primary);
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+}
+
+.order-card__view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-link);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.order-card__view-link:hover {
+  color: var(--color-link-hover);
+  border-color: var(--color-bg-teal);
+  background: var(--color-glow-teal-15);
+}
+
+/* ── Success file URL (after order placement) ── */
+.success-file-url {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-sm);
+  background: var(--color-bg-canvas);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.success-file-url__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.success-file-url__header svg {
+  color: var(--color-bg-teal);
+}
+
+.success-file-url__url {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--color-glow-teal-15);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.success-file-url__url a {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--color-link);
+  text-decoration: none;
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+}
+
+.success-file-url__url a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.success-file-url__copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.success-file-url__copy:hover {
+  color: var(--color-bg-teal);
+  border-color: var(--color-bg-teal);
+  background: var(--color-glow-teal-15);
+}
+
 /* ── Empty state ── */
 .console-empty {
   text-align: center;

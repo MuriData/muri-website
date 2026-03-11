@@ -28,6 +28,16 @@ export const FAUCET_URL = 'https://testnet-faucet.muri.moe/'
 // ── IPFS ──
 export const IPFS_GATEWAY = 'https://ipfs-rpc.muri.moe/'
 export const IPFS_TOKEN = 'v17BbEqG2qlLJfz3DEvQTiTGA3ubUzVoJUD9fShNmQ4'
+export const IPFS_PUBLIC_GATEWAY = 'https://ipfs.io/ipfs/'
+
+/** Build a public gateway URL from an on-chain URI like `ipfs://QmHash` or `ipfs://QmHash/path` */
+export function ipfsGatewayUrl(uri) {
+  if (!uri) return null
+  let ref = uri
+  if (ref.startsWith('ipfs://')) ref = ref.slice(7)
+  if (!ref || ref === '/') return null
+  return `${IPFS_PUBLIC_GATEWAY}${ref}`
+}
 
 // ── Contract addresses ──
 export const FILE_MARKET_ADDRESS = '0xaab9f94671d6b22eee60509b5c3149e90a78fb54'

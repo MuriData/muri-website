@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { useMyOrders } from '../../hooks/useMyOrders'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
+import { ipfsGatewayUrl } from '../../lib/config'
 
 function IconList() {
   return (
@@ -88,9 +89,26 @@ function OrderCard({ id, details, financials, ipfs }) {
         {uri && (
           <div className="order-card__field" style={{ gridColumn: '1 / -1' }}>
             <span className="order-card__field-label">IPFS CID</span>
-            <span className="order-card__field-value" style={{ fontFamily: 'monospace', fontSize: '0.7rem', wordBreak: 'break-all' }}>
-              {uri}
-            </span>
+            <div className="order-card__uri-row">
+              <span className="order-card__uri-value">
+                {uri}
+              </span>
+              {ipfsGatewayUrl(uri) && (
+                <a
+                  href={ipfsGatewayUrl(uri)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="order-card__view-link"
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3" />
+                    <path d="M10 2h4v4" />
+                    <path d="M7 9L14 2" />
+                  </svg>
+                  View File
+                </a>
+              )}
+            </div>
           </div>
         )}
         {nodes && nodes.length > 0 && (

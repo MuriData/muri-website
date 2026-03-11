@@ -5,6 +5,7 @@ import { useFileUpload } from '../../hooks/useFileUpload'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { useWasm } from '../../hooks/useWasm'
 import { formatMuri, formatChunks } from '../../hooks/useDashboardData'
+import { ipfsGatewayUrl } from '../../lib/config'
 
 function IconFile() {
   return (
@@ -486,6 +487,39 @@ function UploadWizard({ ipfs }) {
             <div className="tx-status tx-status--success">
               Order placed successfully!
             </div>
+
+            {/* Public gateway URL */}
+            {cid && ipfsGatewayUrl(`ipfs://${cid}`) && (
+              <div className="success-file-url">
+                <div className="success-file-url__header">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3" />
+                    <path d="M10 2h4v4" />
+                    <path d="M7 9L14 2" />
+                  </svg>
+                  Your file is available at
+                </div>
+                <div className="success-file-url__url">
+                  <a
+                    href={ipfsGatewayUrl(`ipfs://${cid}`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {ipfsGatewayUrl(`ipfs://${cid}`)}
+                  </a>
+                  <button
+                    className="success-file-url__copy"
+                    onClick={() => navigator.clipboard.writeText(ipfsGatewayUrl(`ipfs://${cid}`))}
+                    title="Copy URL"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="5" y="5" width="9" height="9" rx="1" />
+                      <path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Seeding indicator for browser IPFS (upload mode only) */}
             {ipfs.mode === 'browser' && inputMode === 'upload' && (

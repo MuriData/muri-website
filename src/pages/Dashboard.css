@@ -326,6 +326,54 @@
   color: var(--color-text-secondary);
 }
 
+/* ── Order Detail URI link ── */
+.order-detail__uri-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-link);
+  text-decoration: none;
+  word-break: break-all;
+  transition: var(--transition-fast);
+}
+
+.order-detail__uri-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.order-detail__uri-link svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.order-detail__uri-link:hover svg {
+  opacity: 1;
+}
+
+.order-detail__view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-main);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-bg-teal);
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-bg-teal);
+  background: transparent;
+  transition: var(--transition-fast);
+}
+
+.order-detail__view-btn:hover {
+  background: var(--color-bg-teal);
+  color: var(--color-text-on-teal);
+  box-shadow: var(--shadow-cta);
+  transform: translateY(-1px);
+}
+
 /* ── Panel title with controls ── */
 .dashboard-panel__title-row {
   display: flex;

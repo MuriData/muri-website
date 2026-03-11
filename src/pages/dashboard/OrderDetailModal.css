@@ -132,6 +132,31 @@
   font-weight: var(--weight-semibold);
 }
 
+/* ── URI link in modal ── */
+.order-modal .order-detail__uri-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-link);
+  text-decoration: none;
+  word-break: break-all;
+  transition: var(--transition-fast);
+}
+
+.order-modal .order-detail__uri-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.order-modal .order-detail__uri-link svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.order-modal .order-detail__uri-link:hover svg {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .order-modal-overlay {
     padding-top: var(--space-md);

@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { useOrderDetail } from '../../hooks/useOrderDetail'
 import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
+import { ipfsGatewayUrl } from '../../lib/config'
 import './OrderDetailModal.css'
 
 function OrderDetailModal({ orderId, onClose }) {
@@ -38,7 +39,27 @@ function OrderDetailModal({ orderId, onClose }) {
               <div className="order-modal__section">
                 <h4 className="order-modal__section-title">Details</h4>
                 <Row label="Owner" value={truncateAddress(details[0])} />
-                <Row label="URI" value={details[1] || '—'} mono />
+                <Row
+                  label="URI"
+                  mono
+                  value={
+                    details[1] && ipfsGatewayUrl(details[1]) ? (
+                      <a
+                        href={ipfsGatewayUrl(details[1])}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="order-detail__uri-link"
+                      >
+                        {details[1]}
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3" />
+                          <path d="M10 2h4v4" />
+                          <path d="M7 9L14 2" />
+                        </svg>
+                      </a>
+                    ) : (details[1] || '—')
+                  }
+                />
                 <Row label="Root Hash" value={details[2] ? `0x${details[2].toString(16).slice(0, 12)}...` : '—'} />
                 <Row label="Size" value={formatChunks(details[3])} />
                 <Row label="Periods" value={details[4]?.toString()} />
