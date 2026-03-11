@@ -42,6 +42,9 @@ export function useFileUpload(ipfsUpload) {
     setFile(null)
     try {
       const bytes = await ipfsFetch(cidStr)
+      if (!bytes || !bytes.length) {
+        throw new Error('Fetched 0 bytes — block may not be available from this IPFS node')
+      }
       const blob = new File([bytes], cidStr, { type: 'application/octet-stream' })
       setFile(blob)
       setNumChunks(Math.ceil(bytes.length / CHUNK_SIZE))

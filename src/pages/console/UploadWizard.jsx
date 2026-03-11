@@ -43,10 +43,15 @@ function IconLink() {
 }
 
 // Basic CID format validation: CIDv0 (Qm, 46 base58 chars) or CIDv1 (bafy/bafk prefix, base32)
-// Also allows CID + path like "QmHash/path/to/file"
+// Accepts full URIs: "ipfs://QmHash", "QmHash/path", "QmHash?type=raw", "ipfs://QmHash?type=raw"
 function isValidCid(s) {
   if (!s) return false
-  const root = s.split('/')[0]
+  let v = s.trim()
+  if (v.startsWith('ipfs://')) v = v.slice(7)
+  // Strip query params (e.g. ?type=raw)
+  const qIdx = v.indexOf('?')
+  if (qIdx >= 0) v = v.slice(0, qIdx)
+  const root = v.split('/')[0]
   if (/^Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(root)) return true
   if (/^b[a-z2-7]{58,}$/i.test(root)) return true
   return false
@@ -313,7 +318,7 @@ function UploadWizard({ ipfs }) {
                     value={uriInput}
                     onChange={(e) => setUriInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleImport()}
-                    placeholder="ipfs://Qm... or bare CID"
+                    placeholder="ipfs://Qm... or CID?type=raw for directory DAG"
                     style={{ flex: 1 }}
                     disabled={!ipfs.isConnected}
                     aria-label="IPFS CID or URI"
