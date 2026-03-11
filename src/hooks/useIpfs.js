@@ -87,6 +87,18 @@ export function useIpfs() {
     }
   }, [status, config.mode])
 
+  /** Fetch a raw IPFS block (e.g. directory DAG node) via block/get.
+   *  Falls back to cat in browser mode (Helia doesn't expose block/get). */
+  const fetchBlock = useCallback(async (cid) => {
+    if (status !== 'connected') throw new Error('IPFS not connected')
+
+    if (config.mode === 'browser') {
+      return heliaCatFile(cid) // best-effort: Helia may handle DAG nodes
+    } else {
+      return kuboRef.current.blockGet(cid)
+    }
+  }, [status, config.mode])
+
   // Auto-connect on mount when using external mode with a saved/default endpoint
   const autoConnected = useRef(false)
   useEffect(() => {
@@ -123,5 +135,6 @@ export function useIpfs() {
     disconnect,
     upload,
     fetchFile,
+    fetchBlock,
   }
 }

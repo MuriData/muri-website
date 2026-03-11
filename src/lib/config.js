@@ -30,13 +30,21 @@ export const IPFS_GATEWAY = 'https://ipfs-rpc.muri.moe/'
 export const IPFS_TOKEN = 'v17BbEqG2qlLJfz3DEvQTiTGA3ubUzVoJUD9fShNmQ4'
 export const IPFS_PUBLIC_GATEWAY = 'https://ipfs.io/ipfs/'
 
-/** Build a public gateway URL from an on-chain URI like `ipfs://QmHash` or `ipfs://QmHash/path` */
+/** Build a public gateway URL from an on-chain URI like `ipfs://QmHash` or `ipfs://QmHash/path`.
+ *  Strips the ?type=raw query param (used for raw block storage) since gateways don't need it. */
 export function ipfsGatewayUrl(uri) {
   if (!uri) return null
   let ref = uri
   if (ref.startsWith('ipfs://')) ref = ref.slice(7)
+  const qIdx = ref.indexOf('?')
+  if (qIdx >= 0) ref = ref.slice(0, qIdx)
   if (!ref || ref === '/') return null
   return `${IPFS_PUBLIC_GATEWAY}${ref}`
+}
+
+/** Returns true if the URI has ?type=raw, indicating a raw IPFS block (e.g. directory DAG node). */
+export function isRawBlockUri(uri) {
+  return typeof uri === 'string' && uri.includes('type=raw')
 }
 
 // ── Contract addresses ──

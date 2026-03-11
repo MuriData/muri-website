@@ -5,7 +5,7 @@ import { useFileUpload } from '../../hooks/useFileUpload'
 import { useStorageActions } from '../../hooks/useStorageActions'
 import { useWasm } from '../../hooks/useWasm'
 import { formatMuri, formatChunks } from '../../hooks/useDashboardData'
-import { ipfsGatewayUrl } from '../../lib/config'
+import { ipfsGatewayUrl, isRawBlockUri } from '../../lib/config'
 
 function IconFile() {
   return (
@@ -189,10 +189,14 @@ function UploadWizard({ ipfs }) {
     ? BigInt(actualNumChunks) * BigInt(periods) * BigInt(replicas) * BigInt(priceWei)
     : 0n
 
+  // Detect if user is importing a raw block CID (e.g. "QmHash?type=raw")
+  const rawBlock = isRawBlockUri(uriInput) || isRawBlockUri(cid)
+
   const handleSubmit = () => {
+    const uri = rawBlock ? `ipfs://${cid}?type=raw` : `ipfs://${cid}`
     placeOrder({
       root: wasm.root,
-      uri: `ipfs://${cid}`,
+      uri,
       numChunks: actualNumChunks,
       periods,
       replicas,
@@ -201,10 +205,12 @@ function UploadWizard({ ipfs }) {
     })
   }
 
-  // Parse IPFS URI → full ref (CID + optional path), e.g. "QmHash/wiki/"
+  // Parse IPFS URI → full ref (CID + optional path), stripping query params for IPFS fetch.
   const parseRef = (uri) => {
     let s = uri.trim()
     if (s.startsWith('ipfs://')) s = s.slice(7)
+    const qIdx = s.indexOf('?')
+    if (qIdx >= 0) s = s.slice(0, qIdx)
     if (!s || s === '/') return ''
     return s
   }
@@ -212,7 +218,9 @@ function UploadWizard({ ipfs }) {
   const handleImport = () => {
     const ref = parseRef(uriInput)
     if (!ref) return
-    importFromCid(ref, ipfs.fetchFile)
+    // Use block/get for raw block URIs (directory DAG nodes), cat for normal files
+    const fetcher = isRawBlockUri(uriInput) ? ipfs.fetchBlock : ipfs.fetchFile
+    importFromCid(ref, fetcher)
   }
 
   const handleReset = () => {

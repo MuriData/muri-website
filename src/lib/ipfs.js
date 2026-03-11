@@ -58,4 +58,19 @@ export class KuboClient {
     const data = await res.json()
     return data.Hash
   }
+
+  /**
+   * Fetch the raw block bytes of a CID via /api/v0/block/get.
+   * Unlike cat (which traverses UnixFS), this returns the exact block stored
+   * under the CID — including directory DAG-PB nodes that cat cannot read.
+   */
+  async blockGet(cid) {
+    const res = await fetch(`${this.apiUrl}/api/v0/block/get?arg=${encodeURIComponent(cid)}`, {
+      method: 'POST',
+      headers: this._headers(),
+    })
+    if (!res.ok) throw new Error(`IPFS block/get failed: ${res.status}`)
+    const buf = await res.arrayBuffer()
+    return new Uint8Array(buf)
+  }
 }
