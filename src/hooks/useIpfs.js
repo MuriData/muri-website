@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { getHelia, stopHelia, addFile as heliaAddFile, catFile as heliaCatFile, getNodeInfo as heliaInfo } from '../lib/helia'
+import { getHelia, stopHelia, addFile as heliaAddFile, catFile as heliaCatFile, getBlock as heliaGetBlock, getNodeInfo as heliaInfo } from '../lib/helia'
 import { KuboClient } from '../lib/ipfs'
 import { IPFS_GATEWAY, IPFS_TOKEN } from '../lib/config'
 
@@ -87,13 +87,12 @@ export function useIpfs() {
     }
   }, [status, config.mode])
 
-  /** Fetch a raw IPFS block (e.g. directory DAG node) via block/get.
-   *  Falls back to cat in browser mode (Helia doesn't expose block/get). */
+  /** Fetch a raw IPFS block (e.g. directory DAG node) via blockstore/block-get. */
   const fetchBlock = useCallback(async (cid) => {
     if (status !== 'connected') throw new Error('IPFS not connected')
 
     if (config.mode === 'browser') {
-      return heliaCatFile(cid) // best-effort: Helia may handle DAG nodes
+      return heliaGetBlock(cid)
     } else {
       return kuboRef.current.blockGet(cid)
     }

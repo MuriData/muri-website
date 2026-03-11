@@ -85,6 +85,23 @@ export async function catFile(ref) {
 }
 
 /**
+ * Fetch the raw block bytes for a CID from the Helia blockstore.
+ * Unlike catFile (which traverses UnixFS), this returns the exact block
+ * stored under the CID — including directory DAG-PB nodes.
+ */
+export async function getBlock(ref) {
+  const { helia } = await getHelia()
+  const { CID } = await import('multiformats/cid')
+
+  const slashIdx = ref.indexOf('/')
+  const cidStr = slashIdx > 0 ? ref.slice(0, slashIdx) : ref
+  const cid = CID.parse(cidStr)
+
+  const bytes = await helia.blockstore.get(cid)
+  return new Uint8Array(bytes)
+}
+
+/**
  * Get info about the running Helia node.
  */
 export async function getNodeInfo() {
