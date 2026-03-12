@@ -1,6 +1,10 @@
 /* Web Worker for muri WASM operations — keeps main thread responsive.
  * Handles both single-threaded (small files) and pre-hashed (parallel) paths. */
 
+// Derive base URL from the worker script location so assets resolve
+// correctly when hosted under a subpath (e.g. /ipfs/CID/).
+const _base = self.location.href.replace(/\/assets\/.*$/, '/')
+
 let loaded = false
 let loadPromise = null
 
@@ -9,10 +13,10 @@ async function ensureLoaded() {
   if (loadPromise) return loadPromise
 
   loadPromise = (async () => {
-    importScripts('/wasm_exec.js')
+    importScripts(_base + 'wasm_exec.js')
     const go = new Go()
     const result = await WebAssembly.instantiateStreaming(
-      fetch('/muri.wasm'),
+      fetch(_base + 'muri.wasm'),
       go.importObject,
     )
     go.run(result.instance)
@@ -27,11 +31,11 @@ let fspKeysCache = null
 async function loadFSPKeys() {
   if (fspKeysCache) return fspKeysCache
   fspKeysCache = await Promise.all([
-    fetch('/fsp_prover.key').then((r) => {
+    fetch(_base + 'fsp_prover.key').then((r) => {
       if (!r.ok) throw new Error('Failed to fetch fsp_prover.key')
       return r.arrayBuffer()
     }),
-    fetch('/fsp_verifier.key').then((r) => {
+    fetch(_base + 'fsp_verifier.key').then((r) => {
       if (!r.ok) throw new Error('Failed to fetch fsp_verifier.key')
       return r.arrayBuffer()
     }),

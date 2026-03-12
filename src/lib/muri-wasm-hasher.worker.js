@@ -5,6 +5,10 @@
  * Without batching, a worker assigned 256 MB of a 1 GB file would load
  * the entire portion into both JS and Go WASM memory simultaneously. */
 
+// Derive base URL from the worker script location so assets resolve
+// correctly when hosted under a subpath (e.g. /ipfs/CID/).
+const _base = self.location.href.replace(/\/assets\/.*$/, '/')
+
 const CHUNK_SIZE = 16384 // 16 KB — must match Go's fsp.FileSize
 const BATCH_CHUNKS = 64 // chunks per batch — peak memory ~1 MB
 
@@ -16,10 +20,10 @@ async function ensureLoaded() {
   if (loadPromise) return loadPromise
 
   loadPromise = (async () => {
-    importScripts('/wasm_exec.js')
+    importScripts(_base + 'wasm_exec.js')
     const go = new Go()
     const result = await WebAssembly.instantiateStreaming(
-      fetch('/muri.wasm'),
+      fetch(_base + 'muri.wasm'),
       go.importObject,
     )
     go.run(result.instance)
