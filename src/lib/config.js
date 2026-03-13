@@ -24,6 +24,7 @@ export const EXPLORER_NAME = 'MuriData Testnet Alpha Explorer'
 
 // ── Faucet ──
 export const FAUCET_URL = 'https://testnet-faucet.muri.moe/'
+export const FAUCET_ADDRESS = '0x336fdAB6A6747C67a280ece8AF3Fbd9Ca66180F8'
 
 // ── IPFS ──
 export const IPFS_GATEWAY = 'https://ipfs-rpc.muri.moe/'

@@ -1,10 +1,13 @@
-import { useAccount } from 'wagmi'
+import { useEffect } from 'react'
+import { useAccount, useBalance } from 'wagmi'
+import { formatEther } from 'viem'
 import './Console.css'
 import StorageTab from './console/StorageTab'
 import IpfsBar from './console/IpfsBar'
 import { useIpfs } from '../hooks/useIpfs'
+import { useFaucet } from '../hooks/useFaucet'
 import WalletButton from '../components/WalletButton/WalletButton'
-import { FAUCET_URL } from '../lib/config'
+import { FAUCET_ADDRESS } from '../lib/config'
 
 function IconUpload() {
   return (
@@ -12,6 +15,66 @@ function IconUpload() {
       <path d="M3 14v2a2 2 0 002 2h10a2 2 0 002-2v-2" />
       <path d="M10 12V3" /><path d="M6 7l4-4 4 4" />
     </svg>
+  )
+}
+
+function ClaimTokens() {
+  const faucet = useFaucet()
+  const { address } = useAccount()
+  const { data: balance, refetch: refetchBalance } = useBalance({ address })
+
+  useEffect(() => {
+    if (faucet.isSuccess) {
+      faucet.refetch()
+      refetchBalance()
+    }
+  }, [faucet.isSuccess]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const isFaucetConfigured = FAUCET_ADDRESS !== '0x0000000000000000000000000000000000000000'
+
+  if (!isFaucetConfigured) return null
+
+  const cooldownRemaining = faucet.lastClaim > 0n && !faucet.canClaim
+    ? Number(faucet.lastClaim + faucet.cooldown) - Math.floor(Date.now() / 1000)
+    : 0
+
+  function formatCooldown(seconds) {
+    if (seconds <= 0) return ''
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return m > 0 ? `${m}m ${s}s` : `${s}s`
+  }
+
+  let label = `Claim ${faucet.claimAmount > 0n ? formatEther(faucet.claimAmount) : ''} MURI`
+  if (faucet.isPending) label = 'Confirm in wallet...'
+  else if (faucet.isConfirming) label = 'Claiming...'
+  else if (!faucet.canClaim) label = `Cooldown (${formatCooldown(cooldownRemaining)})`
+
+  return (
+    <div className="faucet-bar">
+      <div className="faucet-bar__info">
+        <span className="faucet-bar__tag">Testnet Faucet</span>
+        <span className="faucet-bar__sep" />
+        <span className="faucet-bar__label">Balance</span>
+        <span className="faucet-bar__balance">{balance ? Number(formatEther(balance.value)).toFixed(2) : '...'} MURI</span>
+      </div>
+      <div className="faucet-bar__actions">
+        <button
+          className="console-btn console-btn--primary console-btn--small"
+          onClick={faucet.claim}
+          disabled={faucet.isPending || faucet.isConfirming || !faucet.canClaim}
+        >
+          {(faucet.isPending || faucet.isConfirming) && <span className="console-btn__spinner" />}
+          {label}
+        </button>
+        {faucet.isSuccess && (
+          <span className="faucet-bar__success">Tokens claimed!</span>
+        )}
+        {faucet.error && (
+          <span className="faucet-bar__error">{faucet.error.shortMessage || faucet.error.message}</span>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -33,7 +96,7 @@ function Console() {
           <p className="console-gate__text">Connect your wallet to start uploading files</p>
           <WalletButton />
           <p className="console-gate__hint">
-            Need testnet MURI tokens? Visit the <a href={FAUCET_URL} target="_blank" rel="noopener noreferrer">Testnet Faucet</a>.
+            Connect your wallet to claim free testnet MURI tokens.
           </p>
         </div>
       </div>
@@ -44,11 +107,9 @@ function Console() {
     <div className="console">
       <div className="console-header">
         <h1 className="console-title">Storage Console</h1>
-        <p className="console-subtitle">
-          Upload files to IPFS and place storage orders on-chain.
-          {' '}<a href={FAUCET_URL} target="_blank" rel="noopener noreferrer" className="console-faucet-link">Get testnet tokens</a>
-        </p>
+        <p className="console-subtitle">Upload files to IPFS and place storage orders on-chain.</p>
       </div>
+      <ClaimTokens />
       <IpfsBar ipfs={ipfs} />
       <StorageTab ipfs={ipfs} />
     </div>

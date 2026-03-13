@@ -2,7 +2,7 @@
 // All functions callable through the FileMarket proxy (fallback delegation to extension)
 // Contract addresses are centralized in config.js — re-exported here for convenience.
 
-export { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS, STAKING_MANAGER_ADDRESS } from './config'
+export { FILE_MARKET_ADDRESS, NODE_STAKING_ADDRESS, STAKING_MANAGER_ADDRESS, FAUCET_ADDRESS } from './config'
 
 // ── NativeTokenStakingManager (PoS) ──
 // Deployed at STAKING_MANAGER_ADDRESS. Permissionless staking with native tokens.
@@ -3995,6 +3995,54 @@ export const NODE_STAKING_ABI = [
         "type": "bytes32",
         "internalType": "bytes32"
       }
+    ]
+  }
+]
+
+// ── MuriFaucet ──
+// Simple testnet faucet — dispenses native tokens with a cooldown per address.
+export const FAUCET_ABI = [
+  {
+    "type": "function",
+    "name": "claim",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "canClaim",
+    "inputs": [{ "name": "account", "type": "address" }],
+    "outputs": [{ "name": "", "type": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "claimAmount",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "cooldown",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "lastClaim",
+    "inputs": [{ "name": "", "type": "address" }],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "Claimed",
+    "inputs": [
+      { "name": "recipient", "type": "address", "indexed": true },
+      { "name": "amount", "type": "uint256", "indexed": false }
     ]
   }
 ]
