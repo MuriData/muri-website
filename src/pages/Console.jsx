@@ -7,7 +7,7 @@ import IpfsBar from './console/IpfsBar'
 import { useIpfs } from '../hooks/useIpfs'
 import { useFaucet } from '../hooks/useFaucet'
 import WalletButton from '../components/WalletButton/WalletButton'
-import { FAUCET_ADDRESS } from '../lib/config'
+import { FAUCET_ADDRESS, FAUCET_URL } from '../lib/config'
 
 function IconUpload() {
   return (
@@ -73,6 +73,10 @@ function ClaimTokens() {
         {faucet.error && (
           <span className="faucet-bar__error">{faucet.error.shortMessage || faucet.error.message}</span>
         )}
+        <span className="faucet-bar__hint">
+          Need gas for the first claim?{' '}
+          <a href={FAUCET_URL} target="_blank" rel="noopener noreferrer">Get free tokens here</a>.
+        </span>
       </div>
     </div>
   )
@@ -96,7 +100,9 @@ function Console() {
           <p className="console-gate__text">Connect your wallet to start uploading files</p>
           <WalletButton />
           <p className="console-gate__hint">
-            Connect your wallet to claim free testnet MURI tokens.
+            Need tokens? Get free testnet MURI from the{' '}
+            <a href={FAUCET_URL} target="_blank" rel="noopener noreferrer">Testnet Faucet</a>
+            {' '}— no gas required.
           </p>
         </div>
       </div>
