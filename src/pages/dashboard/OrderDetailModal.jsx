@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { useOrderDetail } from '../../hooks/useOrderDetail'
 import { formatMuri, formatChunks, truncateAddress } from '../../hooks/useDashboardData'
 import { ipfsGatewayUrl } from '../../lib/config'
@@ -6,6 +6,7 @@ import './OrderDetailModal.css'
 
 function OrderDetailModal({ orderId, onClose }) {
   const { details, financials, escrowInfo, nodeEarnings, isLoading } = useOrderDetail(orderId)
+  const modalRef = useRef(null)
 
   const handleClose = useCallback(() => {
     onClose()
@@ -19,15 +20,54 @@ function OrderDetailModal({ orderId, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleClose])
 
+  // Focus trap
+  useEffect(() => {
+    if (orderId == null || !modalRef.current) return
+    const el = modalRef.current
+    const previouslyFocused = document.activeElement
+    const focusable = () => el.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+    const nodes = focusable()
+    if (nodes.length) nodes[0].focus()
+
+    function handleTab(e) {
+      if (e.key !== 'Tab') return
+      const items = focusable()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus() }
+      }
+    }
+    el.addEventListener('keydown', handleTab)
+    return () => {
+      el.removeEventListener('keydown', handleTab)
+      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus()
+    }
+  }, [orderId])
+
   if (orderId == null) return null
 
   return (
     <div className="order-modal-overlay" onClick={handleClose}>
-      <div className="order-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="order-modal"
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Order #${orderId.toString()} details`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="order-modal__header">
           <h3 className="order-modal__title">Order #{orderId.toString()}</h3>
           <button className="order-modal__close" onClick={handleClose} aria-label="Close">
-            &times;
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
 

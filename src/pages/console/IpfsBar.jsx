@@ -68,11 +68,13 @@ function IpfsBar({ ipfs }) {
               onChange={(e) => setEndpointInput(e.target.value)}
               onBlur={() => setConfig({ endpoint: endpointInput })}
               placeholder="http://localhost:5001"
+              aria-label="IPFS endpoint URL"
             />
             <select
               className="ipfs-bar__endpoint"
               value={authState.type}
               onChange={(e) => updateAuth({ type: e.target.value })}
+              aria-label="Authentication type"
             >
               {AUTH_TYPES.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -86,6 +88,7 @@ function IpfsBar({ ipfs }) {
                   value={authState.username || ''}
                   onChange={(e) => updateAuth({ username: e.target.value })}
                   placeholder="Username"
+                  aria-label="IPFS auth username"
                 />
                 <input
                   className="ipfs-bar__endpoint"
@@ -93,6 +96,7 @@ function IpfsBar({ ipfs }) {
                   value={authState.password || ''}
                   onChange={(e) => updateAuth({ password: e.target.value })}
                   placeholder="Password"
+                  aria-label="IPFS auth password"
                 />
               </>
             )}
@@ -103,6 +107,7 @@ function IpfsBar({ ipfs }) {
                 value={authState.token || ''}
                 onChange={(e) => updateAuth({ token: e.target.value })}
                 placeholder="Bearer token"
+                aria-label="IPFS bearer token"
               />
             )}
             {authState.type === 'header' && (
@@ -113,6 +118,7 @@ function IpfsBar({ ipfs }) {
                   value={authState.headerName || ''}
                   onChange={(e) => updateAuth({ headerName: e.target.value })}
                   placeholder="Header name"
+                  aria-label="Custom auth header name"
                 />
                 <input
                   className="ipfs-bar__endpoint"
@@ -120,6 +126,7 @@ function IpfsBar({ ipfs }) {
                   value={authState.headerValue || ''}
                   onChange={(e) => updateAuth({ headerValue: e.target.value })}
                   placeholder="Header value"
+                  aria-label="Custom auth header value"
                 />
               </>
             )}

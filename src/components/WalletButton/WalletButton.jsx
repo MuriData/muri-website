@@ -181,7 +181,41 @@ const DISPLAY_WALLETS = [
 
 const INJECTED_WALLETS = new Set(['Injected', 'MetaMask', 'Core'])
 
+function useFocusTrap(ref, isActive) {
+  useEffect(() => {
+    if (!isActive || !ref.current) return
+    const el = ref.current
+    const focusable = () => el.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+    const previouslyFocused = document.activeElement
+    const nodes = focusable()
+    if (nodes.length) nodes[0].focus()
+
+    function handleKeyDown(e) {
+      if (e.key !== 'Tab') return
+      const items = focusable()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus() }
+      }
+    }
+    el.addEventListener('keydown', handleKeyDown)
+    return () => {
+      el.removeEventListener('keydown', handleKeyDown)
+      if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus()
+    }
+  }, [ref, isActive])
+}
+
 function ConnectModal({ connectors, isPending, onConnect, onClose }) {
+  const modalRef = useRef(null)
+  useFocusTrap(modalRef, true)
+
   const connectorsByName = {}
   const connectorsById = {}
   for (const c of connectors) {
@@ -197,7 +231,14 @@ function ConnectModal({ connectors, isPending, onConnect, onClose }) {
 
   return (
     <div className="wallet-modal-overlay" onClick={onClose}>
-      <div className="wallet-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="wallet-modal"
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Connect Wallet"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="wallet-modal__header">
           <h3 className="wallet-modal__title">Connect Wallet</h3>
           <button className="wallet-modal__close" onClick={onClose} aria-label="Close">

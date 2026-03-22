@@ -48,12 +48,14 @@ function FAQ() {
             <button
               className="faq-item__q"
               onClick={() => setOpen(open === i ? null : i)}
+              aria-expanded={open === i}
+              aria-controls={`faq-answer-${i}`}
             >
               <span>{faq.q}</span>
-              <span className="faq-item__chevron">{open === i ? '−' : '+'}</span>
+              <span className="faq-item__chevron" aria-hidden="true">{open === i ? '−' : '+'}</span>
             </button>
             {open === i && (
-              <p className="faq-item__a">{faq.a}</p>
+              <p className="faq-item__a" id={`faq-answer-${i}`} role="region">{faq.a}</p>
             )}
           </div>
         ))}

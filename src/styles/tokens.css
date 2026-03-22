@@ -9,7 +9,7 @@
   --color-bg-teal-hover: #1cc8cd;
   --color-bg-deep: #0a2f30;
   --color-text-primary: #0d3b3c;
-  --color-text-secondary: #3a6364;
+  --color-text-secondary: #2c5456;
   --color-text-inverse: #ffffff;
   --color-text-on-teal: #ffffff;
 
@@ -89,6 +89,9 @@
   --shadow-navbar: 0 4px 20px var(--color-glow-teal-15);
   --shadow-cta: 0 4px 12px var(--color-glow-teal-40);
   --shadow-cta-hover: 0 6px 16px var(--color-glow-teal-60);
+
+  /* ── Focus ── */
+  --focus-ring: 0 0 0 3px rgba(41, 215, 220, 0.6);
 
   /* ── Transitions ── */
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);

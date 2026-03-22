@@ -91,6 +91,7 @@ function CapacityForm({ nodeInfo }) {
             className="form-input capacity-input-group__select"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
+            aria-label="Capacity unit"
           >
             {UNITS.map((u) => (
               <option key={u.label} value={u.label}>{u.label}</option>

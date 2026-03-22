@@ -83,7 +83,7 @@ body::after {
   body::after,
   #root::before,
   #root::after {
-    animation: none;
+    animation: none !important;
   }
 }
 
@@ -119,6 +119,21 @@ body::after {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* ── Global focus-visible ring ── */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Input elements use an outline instead (box-shadow conflicts with existing input styles) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  box-shadow: none;
+  outline: 2px solid rgba(41, 215, 220, 0.6);
+  outline-offset: -1px;
 }
 
 @media (max-width: 768px) {

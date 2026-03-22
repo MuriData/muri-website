@@ -95,6 +95,7 @@ function NodeStakeForm() {
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               style={{ width: 'auto', minWidth: '90px' }}
+              aria-label="Capacity unit"
             >
               {UNITS.map((u) => (
                 <option key={u.label} value={u.label}>{u.label}</option>

@@ -58,7 +58,27 @@ function SearchDialog({ isOpen, onClose }) {
 
   return (
     <div className="search-overlay" onClick={handleClose}>
-      <div className="search-dialog" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="search-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search documentation"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key !== 'Tab') return
+          const focusable = e.currentTarget.querySelectorAll(
+            'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+          if (!focusable.length) return
+          const first = focusable[0]
+          const last = focusable[focusable.length - 1]
+          if (e.shiftKey) {
+            if (document.activeElement === first) { e.preventDefault(); last.focus() }
+          } else {
+            if (document.activeElement === last) { e.preventDefault(); first.focus() }
+          }
+        }}
+      >
         <div className="search-dialog__input-wrap">
           <svg className="search-dialog__icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
             <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" strokeWidth="2" />
